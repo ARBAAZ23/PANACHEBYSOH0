@@ -3,7 +3,7 @@ import { ShopContext } from '../contexts/ShopContext';
 import Title from './Title';
 
 const CartTotal = () => {
-  const { currency, delivery_fee, getCartAmount,navigate } = useContext(ShopContext);
+  const { currency, delivery_fee, getCartAmount } = useContext(ShopContext);
 
   const subtotal = getCartAmount();
   const total = subtotal + delivery_fee;
@@ -43,12 +43,7 @@ const CartTotal = () => {
           </div>
         </div>
 
-        <button
-        onClick={()=>navigate('/place-order')}
-          className="mt-6 w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
-        >
-          Proceed to Checkout
-        </button>
+        
       </div>
     </div>
   );

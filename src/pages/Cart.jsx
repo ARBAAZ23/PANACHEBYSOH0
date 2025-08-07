@@ -5,12 +5,8 @@ import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 
 const Cart = () => {
-  const {
-    products,
-    currency,
-    cartItems,
-    updateQuantity,
-  } = useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity, navigate } =
+    useContext(ShopContext);
 
   const [cartData, setCartData] = useState([]);
   const [productTotal, setProductTotal] = useState(0);
@@ -90,7 +86,9 @@ const Cart = () => {
 
                   <div className="flex items-center gap-3 mt-4">
                     <button
-                      onClick={() => handleQuantityChange(item._id, item.size, -1)}
+                      onClick={() =>
+                        handleQuantityChange(item._id, item.size, -1)
+                      }
                       className="w-8 h-8 rounded-md bg-gray-200 hover:bg-gray-300 text-lg"
                     >
                       –
@@ -99,7 +97,9 @@ const Cart = () => {
                       {item.quantity}
                     </span>
                     <button
-                      onClick={() => handleQuantityChange(item._id, item.size, 1)}
+                      onClick={() =>
+                        handleQuantityChange(item._id, item.size, 1)
+                      }
                       className="w-8 h-8 rounded-md bg-gray-200 hover:bg-gray-300 text-lg"
                     >
                       +
@@ -122,9 +122,15 @@ const Cart = () => {
           </div>
 
           {/* Cart Totals Section */}
-          <div className="flex justify-end mt-2 mb-4 sm:mt-5 sm:mb-2">
-            <div className="w-full sm:w-[450px]">
+          <div className="flex justify-end mt-4 mb-3">
+            <div className="w-full sm:w-[450px] flex flex-col gap-3">
               <CartTotal productTotal={productTotal} />
+              <button
+                onClick={() => navigate("/place-order")}
+                className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
+              >
+                Proceed to Checkout
+              </button>
             </div>
           </div>
         </>

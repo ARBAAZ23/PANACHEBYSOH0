@@ -16,6 +16,9 @@ import days_icon from './days_icon.svg'
 import support_icon from './support_icon.png'
 import close_icon from './close_icon.png'
 import delete_icon from './delete_icon.png'
+import mastercard_icon from './mastercard_icon.png'
+import cod_icon from './cod_icon.png'
+import razorpay_icon from './razorpay_icon.png'
 
 export const assets = {
   logo,
@@ -35,7 +38,10 @@ export const assets = {
   days_icon,
   support_icon,
   close_icon,
-  delete_icon
+  delete_icon,
+  mastercard_icon,
+  cod_icon,
+  razorpay_icon
 };
 
 export const products = [
