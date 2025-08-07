@@ -19,6 +19,7 @@ import delete_icon from './delete_icon.png'
 import mastercard_icon from './mastercard_icon.png'
 import cod_icon from './cod_icon.png'
 import razorpay_icon from './razorpay_icon.png'
+import about_us from './about_us.png'
 
 export const assets = {
   logo,
@@ -41,7 +42,8 @@ export const assets = {
   delete_icon,
   mastercard_icon,
   cod_icon,
-  razorpay_icon
+  razorpay_icon,
+  about_us
 };
 
 export const products = [

@@ -20,21 +20,18 @@ const Collection = () => {
   const getFilteredAndSortedProducts = () => {
     let filtered = products;
 
-    // Apply category filter
     if (selectedFilters.length > 0) {
       filtered = filtered.filter((item) =>
         selectedFilters.includes(item.category)
       );
     }
 
-    // Apply search filter
     if (showSearch && search.trim() !== "") {
       filtered = filtered.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Apply sorting
     if (sortOption === "lowToHigh") {
       return [...filtered].sort((a, b) => a.price - b.price);
     } else if (sortOption === "highToLow") {
@@ -69,7 +66,7 @@ const Collection = () => {
         <div className="w-full sm:w-64 border border-gray-200 rounded-md bg-white p-4 mb-6 shadow-sm">
           <div
             onClick={() => setShowFilter(!showFilter)}
-            className="text-base sm:text-lg font-semibold text-gray-800 flex items-center justify-between cursor-pointer border-b pb-2"
+            className="text-base sm:text-lg font-semibold text-gray-800 flex items-center justify-between cursor-pointer border-b pb-2 transition duration-300"
           >
             <span>FILTERS</span>
             <span className="text-xl font-light text-gray-600">
@@ -78,7 +75,7 @@ const Collection = () => {
           </div>
 
           <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            className={`transition-all duration-500 ease-in-out overflow-hidden ${
               showFilter ? "max-h-[400px] mt-4" : "max-h-0"
             } sm:max-h-full sm:mt-4`}
           >
@@ -114,7 +111,7 @@ const Collection = () => {
               <Link
                 key={index}
                 to={`/product/${item._id}`}
-                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-md transition p-3 text-center group"
+                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-md transition p-3 text-center group animate-fade-in"
               >
                 <div className="text-[10px] text-gray-500 font-mono mb-1 truncate">
                   ID: {item._id}

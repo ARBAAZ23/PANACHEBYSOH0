@@ -15,10 +15,10 @@ const BestSeller = () => {
   }, [products]);
 
   return (
-    <div className="my-10">
-      <div className="text-center text-3xl py-8">
+    <div className="my-10 animate-fade-up">
+      <div className="text-center text-3xl py-8 transition duration-700 ease-in-out">
         <Title text1={"BEST  "} text2={"SELLERS"} />
-        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
+        <p className="w-11/12 sm:w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600 mt-4 transition duration-700 ease-in-out">
           Explore our bestselling women's styles that everyone is talking about.
           From timeless classics to on-trend essentials, these customer favorites
           are loved for a reason. Handpicked from our most popular pieces, this
@@ -28,18 +28,20 @@ const BestSeller = () => {
           out on these fashion must-haves that are flying off the shelves!
         </p>
       </div>
-      {bestSeller.length === 0? (
+
+      {bestSeller.length === 0 ? (
         <p className="text-center text-sm text-gray-400">No bestsellers found.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 px-4">
-          {bestSeller.map((item,index) => (
-            <ProductItem
-              key={index}
-              id={item._id}
-              name={item.name}
-              image={item.image}
-              price={item.price}
-            />
+          {bestSeller.map((item, index) => (
+            <div key={index} className="animate-zoom-in">
+              <ProductItem
+                id={item._id}
+                name={item.name}
+                image={item.image}
+                price={item.price}
+              />
+            </div>
           ))}
         </div>
       )}

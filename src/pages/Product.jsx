@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShopContext } from '../contexts/ShopContext';
 import reviews from '../assets/review';
+import { motion } from 'framer-motion';
 
 const Product = () => {
   const { productId } = useParams();
@@ -28,17 +29,31 @@ const Product = () => {
 
   return (
     <section className="min-h-screen bg-[#f9f9f9] px-4 py-10 sm:px-8 font-sans">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 bg-white shadow-xl rounded-xl overflow-hidden p-6 sm:p-10">
+      <motion.div
+        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 bg-white shadow-xl rounded-xl overflow-hidden p-6 sm:p-10"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+      >
         {/* Image Gallery */}
-        <div className="flex flex-col-reverse md:flex-row gap-4 w-full">
+        <motion.div
+          className="flex flex-col-reverse md:flex-row gap-4 w-full"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           {/* Thumbnails */}
           <div className="flex md:flex-col flex-row gap-3 overflow-auto max-h-[500px]">
             {images.map((img, index) => (
-              <img
+              <motion.img
                 key={index}
                 src={img}
                 alt={`Thumbnail ${index + 1}`}
                 onClick={() => setCurrentImageIndex(index)}
+                whileHover={{ scale: 1.1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
                 className={`w-20 h-24 object-cover rounded-md cursor-pointer border transition-all ${
                   currentImageIndex === index
                     ? 'border-gray-900 ring-2 ring-gray-700'
@@ -49,17 +64,27 @@ const Product = () => {
           </div>
 
           {/* Main Image */}
-          <div className="relative w-full aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden shadow-inner flex items-center justify-center">
+          <motion.div
+            className="relative w-full aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden shadow-inner flex items-center justify-center"
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <img
               src={images[currentImageIndex]}
               alt={productData.name}
               className="w-full h-full object-cover transition duration-300"
             />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Product Info */}
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">{productData.name}</h1>
 
           <p className="text-2xl text-orange-600 font-semibold">${productData.price}</p>
@@ -89,9 +114,11 @@ const Product = () => {
               <p className="text-sm font-medium text-gray-700 mb-2">Select Size:</p>
               <div className="flex gap-3 flex-wrap">
                 {productData.size.map((size, i) => (
-                  <button
+                  <motion.button
                     key={i}
                     onClick={() => setSelectedSize(size)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
                       selectedSize === size
                         ? 'bg-gray-900 text-white border-gray-900'
@@ -99,7 +126,7 @@ const Product = () => {
                     }`}
                   >
                     {size}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -110,24 +137,42 @@ const Product = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="w-full sm:w-auto px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-lg transition duration-200"
               onClick={() => addToCart(productData._id, selectedSize)}
             >
               Add to Cart
-            </button>
-            <button className="w-full sm:w-auto px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg transition duration-200">
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg transition duration-200"
+            >
               Wishlist
-            </button>
+            </motion.button>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Reviews Section */}
-      <div className="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6 space-y-4">
+      <motion.div
+        className="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6 space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
         <h2 className="text-2xl font-bold text-gray-800">Customer Reviews</h2>
-        {reviews.map((review) => (
-          <div key={review.id} className="bg-gray-50 border rounded-lg p-4">
+        {reviews.map((review, index) => (
+          <motion.div
+            key={review.id}
+            className="bg-gray-50 border rounded-lg p-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.4 }}
+          >
             <div className="flex justify-between items-center">
               <p className="font-medium text-gray-900">{review.name}</p>
               <p className="text-sm text-gray-500">{review.date}</p>
@@ -145,9 +190,9 @@ const Product = () => {
               ))}
             </div>
             <p className="text-gray-700">{review.comment}</p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };

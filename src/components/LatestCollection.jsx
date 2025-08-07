@@ -5,18 +5,17 @@ import ProductItem from "./ProductItem";
 
 const LatestCollection = () => {
   const { products } = useContext(ShopContext);
-  // console.log(products);
-  const [LatestProduct, setLatestProduct] = useState([]);
+  const [latestProduct, setLatestProduct] = useState([]);
 
   useEffect(() => {
     setLatestProduct(products.slice(0, 10));
-  }, []);
+  }, [products]);
 
   return (
-    <div className="my-10">
-      <div className="text-center py-8 text-3xl">
+    <div className="my-10 animate-fade-up">
+      <div className="text-center py-8 text-3xl transition duration-700 ease-in-out">
         <Title text1={"LATEST "} text2={" COLLECTIONS"} />
-        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
+        <p className="w-11/12 sm:w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600 mt-4 transition duration-700 ease-in-out">
           Discover our new arrivals in women's fashion, showcasing the latest
           trends and styles in ladies' wear. From elegant dresses to chic
           everyday outfits, this fresh collection for women is designed to
@@ -26,13 +25,22 @@ const LatestCollection = () => {
           bring you the best of the season in one place.
         </p>
       </div>
-      {/*Renderin the Products   */}
+
+      {/* Products grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {
-          LatestProduct.map((item,index)=>(
-            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price}/>
-          ))
-        }
+        {latestProduct.map((item, index) => (
+          <div
+            key={index}
+            className="animate-zoom-in"
+          >
+            <ProductItem
+              id={item._id}
+              image={item.image}
+              name={item.name}
+              price={item.price}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
