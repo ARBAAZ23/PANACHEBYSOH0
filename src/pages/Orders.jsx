@@ -15,7 +15,8 @@ const Orders = () => {
         {products.slice(1, 4).map((item, index) => (
           <div
             key={index}
-            className="p-5 border bg-white rounded-xl shadow-sm hover:shadow-md transition"
+            className="p-5 border bg-white rounded-xl shadow-sm hover:shadow-md transition animate-fade-in-up"
+            style={{ animationDelay: `${index * 0.2}s` }}
           >
             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
               {/* Product Image */}

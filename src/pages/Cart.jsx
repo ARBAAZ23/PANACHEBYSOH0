@@ -46,7 +46,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="border-t pt-14 max-w-5xl mx-auto px-4">
+    <div className="border-t pt-14 max-w-5xl mx-auto px-4 animate-fade-in-up transition-all duration-500 ease-in-out">
       <div className="text-2xl mb-6">
         <Title text1={"YOUR "} text2={"CART"} />
       </div>
@@ -61,12 +61,12 @@ const Cart = () => {
             {cartData.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col sm:flex-row gap-4 items-center sm:items-start bg-white p-4 rounded-xl shadow-sm border"
+                className="flex flex-col sm:flex-row gap-4 items-center sm:items-start bg-white p-4 rounded-xl shadow-sm border animate-slide-in-left"
               >
                 <img
                   src={item.product?.image[0]}
                   alt={item.product?.name}
-                  className="w-24 h-24 object-cover rounded-md"
+                  className="w-24 h-24 object-cover rounded-md transition-transform duration-300 hover:scale-105"
                 />
 
                 <div className="flex-1 w-full">
@@ -84,12 +84,12 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 mt-4">
+                  <div className="flex items-center gap-3 mt-4 transition-all">
                     <button
                       onClick={() =>
                         handleQuantityChange(item._id, item.size, -1)
                       }
-                      className="w-8 h-8 rounded-md bg-gray-200 hover:bg-gray-300 text-lg"
+                      className="w-8 h-8 rounded-md bg-gray-200 hover:bg-gray-300 text-lg transition-all"
                     >
                       –
                     </button>
@@ -100,19 +100,19 @@ const Cart = () => {
                       onClick={() =>
                         handleQuantityChange(item._id, item.size, 1)
                       }
-                      className="w-8 h-8 rounded-md bg-gray-200 hover:bg-gray-300 text-lg"
+                      className="w-8 h-8 rounded-md bg-gray-200 hover:bg-gray-300 text-lg transition-all"
                     >
                       +
                     </button>
 
                     <button
                       onClick={() => handleDelete(item._id, item.size)}
-                      className="ml-auto"
+                      className="ml-auto transition-opacity hover:opacity-70"
                     >
                       <img
                         src={assets.delete_icon}
                         alt="Delete"
-                        className="w-5 h-5 hover:opacity-70"
+                        className="w-5 h-5"
                       />
                     </button>
                   </div>
@@ -122,12 +122,12 @@ const Cart = () => {
           </div>
 
           {/* Cart Totals Section */}
-          <div className="flex justify-end mt-4 mb-3">
+          <div className="flex justify-end mt-4 mb-3 animate-fade-in-up delay-200">
             <div className="w-full sm:w-[450px] flex flex-col gap-3">
               <CartTotal productTotal={productTotal} />
               <button
                 onClick={() => navigate("/place-order")}
-                className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
+                className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-900 transition-all duration-300"
               >
                 Proceed to Checkout
               </button>

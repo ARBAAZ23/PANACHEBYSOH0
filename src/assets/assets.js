@@ -20,6 +20,7 @@ import mastercard_icon from './mastercard_icon.png'
 import cod_icon from './cod_icon.png'
 import razorpay_icon from './razorpay_icon.png'
 import about_us from './about_us.png'
+import contact_us from './contact_us.jpg'
 
 export const assets = {
   logo,
@@ -43,7 +44,8 @@ export const assets = {
   mastercard_icon,
   cod_icon,
   razorpay_icon,
-  about_us
+  about_us,
+  contact_us
 };
 
 export const products = [

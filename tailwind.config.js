@@ -19,6 +19,7 @@ export default {
         'slide-in-right': 'slideInRight 1s ease-out both',
         'fade-up': 'fadeUp 0.9s ease-out',
         'zoom-in': 'zoomIn 0.5s ease-out',
+        
       },
       keyframes: {
         fadeInSlide: {
@@ -49,8 +50,10 @@ export default {
           '0%': { opacity: 0, transform: 'scale(0.9)' },
           '100%': { opacity: 1, transform: 'scale(1)' },
         },
+        
       },
   },
   plugins: [],
   }
+  
 }
