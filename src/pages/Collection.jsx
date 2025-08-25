@@ -20,18 +20,23 @@ const Collection = () => {
   const getFilteredAndSortedProducts = () => {
     let filtered = products;
 
+    // Filter by category
     if (selectedFilters.length > 0) {
       filtered = filtered.filter((item) =>
-        selectedFilters.includes(item.category)
+        selectedFilters.some(
+          (filter) => item.category?.toLowerCase() === filter.toLowerCase()
+        )
       );
     }
 
+    // Filter by search
     if (showSearch && search.trim() !== "") {
       filtered = filtered.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
+    // Sorting
     if (sortOption === "lowToHigh") {
       return [...filtered].sort((a, b) => a.price - b.price);
     } else if (sortOption === "highToLow") {
@@ -45,15 +50,16 @@ const Collection = () => {
 
   return (
     <div className="bg-white min-h-screen px-4 sm:px-10 pt-10 border-t font-sans">
+      {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
-        <div className="text-2xl sm:text-3xl lg:text-4xl font-semibold transition-all duration-300">
+        <div className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
           <Title text1="All " text2="COLLECTION" />
         </div>
 
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
-          className="border border-gray-300 px-4 py-2 rounded-md text-sm sm:text-base bg-white text-gray-700 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-300 ease-in-out"
+          className="border border-gray-300 px-4 py-2 rounded-md text-sm sm:text-base bg-white text-gray-700 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
         >
           <option value="relevant">Sort: Relevant</option>
           <option value="lowToHigh">Price: Low to High</option>
@@ -66,7 +72,7 @@ const Collection = () => {
         <div className="w-full sm:w-64 border border-gray-200 rounded-md bg-white p-4 mb-6 shadow-sm">
           <div
             onClick={() => setShowFilter(!showFilter)}
-            className="text-base sm:text-lg font-semibold text-gray-800 flex items-center justify-between cursor-pointer border-b pb-2 transition duration-300"
+            className="text-base sm:text-lg font-semibold text-gray-800 flex items-center justify-between cursor-pointer border-b pb-2"
           >
             <span>FILTERS</span>
             <span className="text-xl font-light text-gray-600">
@@ -87,7 +93,7 @@ const Collection = () => {
                 (item) => (
                   <label
                     key={item}
-                    className="flex items-center gap-2 cursor-pointer hover:text-orange-500 transition-colors"
+                    className="flex items-center gap-2 cursor-pointer hover:text-orange-500"
                   >
                     <input
                       type="checkbox"
@@ -111,11 +117,8 @@ const Collection = () => {
               <Link
                 key={index}
                 to={`/product/${item._id}`}
-                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-md transition p-3 text-center group animate-fade-in"
+                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition p-3 text-center group"
               >
-                <div className="text-[10px] text-gray-500 font-mono mb-1 truncate">
-                  ID: {item._id}
-                </div>
 
                 <div className="overflow-hidden rounded-md aspect-[3/4] relative">
                   <img
@@ -125,10 +128,15 @@ const Collection = () => {
                   />
                 </div>
 
-                <h2 className="text-base font-semibold text-gray-800 mt-3">
+                {/* Product Name */}
+                <h2 className="mt-3 text-sm sm:text-base font-semibold text-gray-900 group-hover:text-orange-500 transition-colors duration-300 line-clamp-1">
                   {item.name}
                 </h2>
-                <p className="text-pink-600 font-bold mt-1">${item.price}</p>
+
+                {/* Price */}
+                <p className="mt-1 text-lg font-bold text-orange-600 tracking-wide">
+                  ${item.price}
+                </p>
               </Link>
             ))
           ) : (

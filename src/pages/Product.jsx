@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ShopContext } from '../contexts/ShopContext';
-import reviews from '../assets/review';
-import { motion } from 'framer-motion';
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ShopContext } from "../contexts/ShopContext";
+import reviews from "../assets/review";
+import { motion } from "framer-motion";
 
 const Product = () => {
   const { productId } = useParams();
@@ -10,11 +10,23 @@ const Product = () => {
   const [productData, setProductData] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [formattedSizes, setFormattedSizes] = useState([]);
 
+  // ✅ Load product when products change or productId changes
   useEffect(() => {
-    const product = products.find(item => item._id === productId);
+    const product = products.find((item) => String(item._id) === String(productId));
     setProductData(product || null);
     setCurrentImageIndex(0);
+
+    if (product) {
+      let sizesArr = [];
+      if (Array.isArray(product.sizes)) {
+        sizesArr = product.sizes;
+      } else if (typeof product.sizes === "string" && product.sizes.trim() !== "") {
+        sizesArr = product.sizes.split(",").map((s) => s.trim());
+      }
+      setFormattedSizes(sizesArr);
+    }
   }, [productId, products]);
 
   if (!productData) {
@@ -25,7 +37,9 @@ const Product = () => {
     );
   }
 
-  const images = Array.isArray(productData.image) ? productData.image : [productData.image];
+  const images = Array.isArray(productData.image)
+    ? productData.image
+    : [productData.image];
 
   return (
     <section className="min-h-screen bg-[#f9f9f9] px-4 py-10 sm:px-8 font-sans">
@@ -56,8 +70,8 @@ const Product = () => {
                 transition={{ delay: index * 0.1 }}
                 className={`w-20 h-24 object-cover rounded-md cursor-pointer border transition-all ${
                   currentImageIndex === index
-                    ? 'border-gray-900 ring-2 ring-gray-700'
-                    : 'border-gray-300'
+                    ? "border-gray-900 ring-2 ring-gray-700"
+                    : "border-gray-300"
                 }`}
               />
             ))}
@@ -85,14 +99,19 @@ const Product = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">{productData.name}</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
+            {productData.name}
+          </h1>
 
-          <p className="text-2xl text-orange-600 font-semibold">${productData.price}</p>
+          <p className="text-2xl text-orange-600 font-semibold">
+            ${productData.price}
+          </p>
 
           <p className="text-gray-500 text-sm">
             <span className="font-medium">Category:</span> {productData.category}
           </p>
 
+          {/* Product Details */}
           {productData.productDetails && (
             <div className="bg-gray-100 rounded-md p-4 text-sm text-gray-700 border border-gray-200 space-y-2">
               {productData.productDetails.map((detail, i) => (
@@ -109,11 +128,13 @@ const Product = () => {
           )}
 
           {/* Size Selection */}
-          {productData.size && (
+          {formattedSizes.length > 0 ? (
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">Select Size:</p>
+              <p className="text-sm font-medium text-gray-700 mb-2">
+                Select Size:
+              </p>
               <div className="flex gap-3 flex-wrap">
-                {productData.size.map((size, i) => (
+                {formattedSizes.map((size, i) => (
                   <motion.button
                     key={i}
                     onClick={() => setSelectedSize(size)}
@@ -121,8 +142,8 @@ const Product = () => {
                     whileTap={{ scale: 0.95 }}
                     className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
                       selectedSize === size
-                        ? 'bg-gray-900 text-white border-gray-900'
-                        : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                     }`}
                   >
                     {size}
@@ -130,17 +151,25 @@ const Product = () => {
                 ))}
               </div>
             </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No sizes available</p>
           )}
 
           <p className="text-gray-600 leading-relaxed">
-            Experience timeless elegance with our newest collection piece. Perfectly tailored from premium satin fabric with a wide-leg pant, this outfit brings unmatched comfort and graceful style.
+            Experience timeless elegance with our newest collection piece.
           </p>
 
+          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-lg transition duration-200"
+              whileHover={{ scale: selectedSize ? 1.05 : 1 }}
+              whileTap={{ scale: selectedSize ? 0.95 : 1 }}
+              disabled={!selectedSize}
+              className={`w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-lg transition duration-200 ${
+                selectedSize
+                  ? "bg-orange-600 hover:bg-orange-700 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
               onClick={() => addToCart(productData._id, selectedSize)}
             >
               Add to Cart
@@ -157,7 +186,7 @@ const Product = () => {
         </motion.div>
       </motion.div>
 
-      {/* Reviews Section */}
+      {/* Reviews */}
       <motion.div
         className="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6 space-y-4"
         initial={{ opacity: 0 }}
@@ -181,7 +210,9 @@ const Product = () => {
               {[...Array(5)].map((_, i) => (
                 <svg
                   key={i}
-                  className={`w-5 h-5 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                  className={`w-5 h-5 ${
+                    i < review.rating ? "text-yellow-400" : "text-gray-300"
+                  }`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

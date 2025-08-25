@@ -1,163 +1,181 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from "react";
+import { ShopContext } from "../contexts/ShopContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
 const Login = () => {
-  const [currentState, setCurrentState] = useState('Sign Up');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    username: '',
-  });
-  const [errors, setErrors] = useState({});
+  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
 
-  const toggleState = () => {
-    setCurrentState((prev) => (prev === 'Sign Up' ? 'Login' : 'Sign Up'));
-    setFormData({ email: '', password: '', username: '' });
-    setErrors({});
-  };
+  const [mode, setMode] = useState("Login"); // "Login" or "Sign Up"
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (token) navigate("/");
+  }, [token, navigate]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (currentState === 'Sign Up') {
-      if (!formData.username.trim()) {
-        newErrors.username = 'Username is required';
-      } else if (formData.username.length < 3) {
-        newErrors.username = 'Username must be at least 3 characters';
-      }
-    }
-
-    return newErrors;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+    try {
+      const endpoint = mode === "Login" ? "login" : "register";
+      const { data } = await axios.post(
+        `${backendUrl}api/user/${endpoint}`,
+        formData
+      );
+
+      if (data?.token) {
+        setToken(data.token);
+        localStorage.setItem("token", data.token);
+        toast.success(`${mode} successful ✅`);
+        navigate("/");
+      } else {
+        toast.error("No token received from server");
+      }
+    } catch (err) {
+      const message = err.response?.data?.message || "Something went wrong!";
+      if (message.toLowerCase().includes("exists")) {
+        toast.error("This email is already registered, please login.");
+        setMode("Login");
+      } else {
+        toast.error(message);
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setErrors({});
-    console.log(`${currentState} form submitted`, formData);
+  const handleGoogleLogin = () => {
+    toast.info("Google login coming soon 🚀");
+  };
 
-    if (currentState === 'Sign Up') {
-      setTimeout(() => {
-        alert('Sign up successful! Redirecting to login...');
-        toggleState();
-      }, 500);
-    } else {
-      alert('Login successful!');
-    }
+  const handleForgotPassword = () => {
+    toast.info("Forgot password flow coming soon 🔑");
   };
 
   return (
-    <main className="min-h-full flex items-center justify-center bg-gray-50 px-4 py-10 transition-all duration-500">
-      <section className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl animate-fade-in transition-all duration-500">
-        <header className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800 transition-all duration-300">
-            {currentState}
-          </h2>
-          <p className="font-prata text-sm text-gray-500 transition-opacity duration-300">
-            {currentState === 'Sign Up'
-              ? 'Create your account to get started'
-              : 'Welcome back! Please login to your account'}
-          </p>
-        </header>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 px-4">
+      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          {mode === "Login" ? "Welcome to PanacheBySoh" : "Create Your Account"}
+        </h2>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div className="transition-all duration-300">
+          {mode === "Sign Up" && (
+            <div className="relative">
+              <User className="absolute left-3 top-3 text-gray-400" size={20} />
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
+          )}
+
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
               type="email"
               name="email"
               placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border rounded-md transition-all duration-200 focus:outline-none focus:ring-2 ${
-                errors.email ? 'border-red-500 ring-red-400' : 'focus:ring-black'
-              }`}
+              className="w-full border border-gray-300 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
-          {/* Password */}
-          <div className="transition-all duration-300">
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border rounded-md transition-all duration-200 focus:outline-none focus:ring-2 ${
-                errors.password ? 'border-red-500 ring-red-400' : 'focus:ring-black'
-              }`}
+              className="w-full border border-gray-300 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
             />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
           </div>
 
-          {/* Username (only for Sign Up) */}
-          {currentState === 'Sign Up' && (
-            <div className="transition-all duration-300">
-              <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-md transition-all duration-200 focus:outline-none focus:ring-2 ${
-                  errors.username ? 'border-red-500 ring-red-400' : 'focus:ring-black'
-                }`}
-              />
-              {errors.username && (
-                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
-              )}
+          {mode === "Login" && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Forgot Password?
+              </button>
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-900 transition duration-300 transform hover:scale-[1.02] active:scale-95"
+            disabled={loading}
+            className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
           >
-            {currentState}
+            {loading ? "Please wait..." : mode === "Login" ? "Login" : "Sign Up"}
           </button>
         </form>
 
-        {/* Toggle Link */}
-        <div className="text-center mt-6 text-sm text-gray-600">
-          {currentState === 'Sign Up'
-            ? 'Already have an account?'
-            : 'New here?'}{' '}
+        {/* Toggle between login and signup */}
+        <div className="mt-6 text-center text-gray-600">
+          {mode === "Login" ? (
+            <p>
+              Don’t have an account?{" "}
+              <button
+                onClick={() => setMode("Sign Up")}
+                className="text-blue-500 hover:underline font-medium"
+              >
+                Sign Up
+              </button>
+            </p>
+          ) : (
+            <p>
+              Already have an account?{" "}
+              <button
+                onClick={() => setMode("Login")}
+                className="text-blue-500 hover:underline font-medium"
+              >
+                Login
+              </button>
+            </p>
+          )}
+        </div>
+
+        {/* Google Login */}
+        <div className="mt-6">
           <button
-            type="button"
-            onClick={toggleState}
-            className="text-blue-600 hover:underline font-medium transition duration-200"
+            onClick={handleGoogleLogin}
+            className="w-full bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors"
           >
-            {currentState === 'Sign Up' ? 'Login' : 'Sign Up'}
+            Continue with Google
           </button>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 };
 

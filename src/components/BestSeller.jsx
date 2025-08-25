@@ -4,12 +4,12 @@ import Title from "./Title";
 import ProductItem from "./ProductItem";
 
 const BestSeller = () => {
-  const products = useContext(ShopContext);
+  const { products } = useContext(ShopContext); // ✅ FIX: correctly get products array
   const [bestSeller, setBestSeller] = useState([]);
 
   useEffect(() => {
     if (products && products.length > 0) {
-      const bestProduct = products.filter((item) => item.bestSeller);
+      const bestProduct = products.filter((item) => item.bestseller === true); // ✅ Match your backend key exactly
       setBestSeller(bestProduct.slice(0, 5));
     }
   }, [products]);
@@ -33,8 +33,8 @@ const BestSeller = () => {
         <p className="text-center text-sm text-gray-400">No bestsellers found.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 px-4">
-          {bestSeller.map((item, index) => (
-            <div key={index} className="animate-zoom-in">
+          {bestSeller.map((item) => (
+            <div key={item._id} className="animate-zoom-in">
               <ProductItem
                 id={item._id}
                 name={item.name}

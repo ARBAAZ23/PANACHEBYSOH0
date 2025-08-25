@@ -5,12 +5,18 @@ import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } =
+  const { products, currency, cartItems, updateQuantity, navigate, getUserCart } =
     useContext(ShopContext);
 
   const [cartData, setCartData] = useState([]);
   const [productTotal, setProductTotal] = useState(0);
 
+  // ✅ Fetch cart from backend when component mounts
+  useEffect(() => {
+    getUserCart();
+  }, []);
+
+  // ✅ Recompute cartData & totals whenever cartItems or products change
   useEffect(() => {
     const tempData = [];
     let total = 0;
@@ -19,7 +25,7 @@ const Cart = () => {
       for (const size in cartItems[productId]) {
         const quantity = cartItems[productId][size];
         if (quantity > 0) {
-          const product = products.find((p) => p._id === productId);
+          const product = products.find((p) => String(p._id) === String(productId));
           tempData.push({ _id: productId, size, quantity, product });
 
           if (product) {
