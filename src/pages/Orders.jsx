@@ -53,6 +53,7 @@ const Orders = () => {
                     price: 0,
                     image: [],
                     size: "N/A",
+                    quantity: 0,
                   };
                 }
               })
@@ -83,12 +84,15 @@ const Orders = () => {
   return (
     <div className="border-t pt-16 px-4 sm:px-8 lg:px-20 bg-gray-50 min-h-screen">
       {/* Title */}
-      <div className="text-2xl mb-8">
+      <div className="text-center mb-10">
         <Title text1="MY" text2="ORDERS" />
+        <p className="text-gray-500 mt-2">
+          Track and manage all your purchases
+        </p>
       </div>
 
       {/* Orders List */}
-      <div className="space-y-6 mb-3">
+      <div className="space-y-8">
         {orderData.length === 0 ? (
           <p className="text-gray-500 text-center text-lg">
             You haven’t placed any orders yet.
@@ -97,87 +101,120 @@ const Orders = () => {
           orderData.map((order, index) => (
             <div
               key={order._id}
-              className="p-5 border bg-white rounded-xl shadow-sm hover:shadow-md transition animate-fade-in-up"
-              style={{ animationDelay: `${index * 0.2}s` }}
+              className="p-6 border bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-1 duration-300 animate-fade-in-up"
+              style={{ animationDelay: `${index * 0.15}s` }}
             >
-              {/* Each Order Info */}
-              <div className="flex flex-col gap-6">
-                {/* Order Header */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <h3 className="font-semibold text-lg">
-                    Order #{order._id.slice(-6)}
-                  </h3>
-                  <p className="text-gray-500 text-sm sm:text-base">
-                    Date:{" "}
-                    <span className="text-gray-700">
-                      {new Date(order.date).toLocaleDateString()}
-                    </span>
-                  </p>
-                </div>
+              {/* Order Header */}
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b pb-4 mb-6">
+                <h3 className="font-semibold text-lg tracking-wide text-gray-800">
+                  Order{" "}
+                  <span className="text-gray-600">#{order._id.slice(-6)}</span>
+                </h3>
+                <p className="text-gray-500 text-sm sm:text-base">
+                  Date:{" "}
+                  <span className="text-gray-700 font-medium">
+                    {new Date(order.date).toLocaleDateString()}
+                  </span>
+                </p>
+              </div>
 
-                {/* Order Items */}
-                <div className="space-y-4">
-                  {order.items.map((item, idx) => {
-                    console.log(order);
-                    console.log("Order item:", item);
+              {/* Order Items */}
+              <div className="space-y-6">
+                {order.items.map((item, idx) => {
+                  const imageSrc = item.image[1] || item.image[0];
 
-                    const imageSrc = item.image[1] || item.image[0];
+                  return (
+                    <div
+                      key={idx}
+                      className="flex flex-col sm:flex-row sm:items-center gap-6 border-b pb-5 last:border-none"
+                    >
+                      <img
+                        src={imageSrc}
+                        alt={item.name || "Product"}
+                        className="w-full sm:w-52 sm:h-52 h-44 object-contain rounded-xl shadow-md bg-gray-100"
+                      />
 
-                    return (
-                      <div
-                        key={idx}
-                        className="flex flex-col sm:flex-row sm:items-center gap-6 border-b pb-4"
-                      >
-                        <img
-                          src={imageSrc}
-                          alt={item.name || "Product"}
-                          className="w-26 h-[130px] object-contain rounded-md"
-                        />
-
-                        <div className="flex flex-col gap-2 text-sm sm:text-base w-full">
-                          <p className="font-semibold text-lg">{item.name}</p>
-                          <div className="flex flex-wrap items-center gap-4 text-gray-600">
-                            <p>
-                              Price:{" "}
-                              <span className="font-medium text-black">
-                                {currency}
-                                {item.price}
-                              </span>
-                            </p>
-                            <p>
-                              Quantity:{" "}
-                              <span className="font-medium">
-                                {item.quantity}
-                              </span>
-                            </p>
-                            <p>
-                              Size:{" "}
-                              <span className="font-medium">{item.size}</span>
-                            </p>
-                          </div>
+                      <div className="flex flex-col gap-2 text-sm sm:text-base w-full">
+                        <p className="font-semibold text-lg text-gray-800">
+                          {item.name}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-6 text-gray-600">
+                          <p>
+                            Price:{" "}
+                            <span className="font-medium text-black">
+                              {currency}
+                              {item.price}
+                            </span>
+                          </p>
+                          <p>
+                            Quantity:{" "}
+                            <span className="font-medium text-black">
+                              {item.quantity}
+                            </span>
+                          </p>
+                          <p>
+                            Size:{" "}
+                            <span className="font-medium text-black">
+                              {item.size}
+                            </span>
+                          </p>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                {/* Status + Action */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-4">
+              {/* Status + Payment + Action */}
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-3 sm:gap-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Order Status */}
                   <p
-                    className={`font-semibold ${
+                    className={`font-semibold text-sm sm:text-base px-4 py-1 rounded-full w-fit ${
                       order.status === "Delivered"
-                        ? "text-green-600"
+                        ? "bg-green-100 text-green-700"
                         : order.status === "Shipped"
-                        ? "text-blue-600"
-                        : "text-yellow-600"
+                        ? "bg-blue-100 text-blue-700"
+                        : order.status === "Dispatched"
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    Status: {order.status}
+                    {order.status}
                   </p>
-                  <button className="mt-2 sm:mt-0 px-5 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">
-                    Track Order
-                  </button>
+
+                  {/* Payment Method */}
+                  <p
+                    className={`font-medium text-sm sm:text-base px-4 py-1 rounded-full w-fit ${
+                      order.paymentMethod === "COD"
+                        ? "bg-gray-100 text-gray-700"
+                        : "bg-purple-100 text-purple-700"
+                    }`}
+                  >
+                    {order.paymentMethod === "COD"
+                      ? "Cash on Delivery"
+                      : order.paymentMethod}
+                  </p>
+
+                  {/* Payment Status */}
+                  <p
+                    className={`font-medium text-sm sm:text-base px-4 py-1 rounded-full w-fit ${
+                      order.payment
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {order.payment ? "Paid" : "Unpaid"}
+                  </p>
                 </div>
+
+                {/* Action Button */}
+                <button
+                  onClick={loadOrderData}
+                  className="px-6 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition duration-300 shadow-sm"
+                >
+                  Track Order
+                </button>
               </div>
             </div>
           ))

@@ -1,5 +1,5 @@
 import React from "react";
-import { assets } from "../assets/assets";
+import { assets } from "../assets/assets.js";
 
 const Hero = () => {
   return (
@@ -26,13 +26,18 @@ const Hero = () => {
       </div>
 
       {/* Hero Right Side */}
-      <div className="w-full sm:w-1/2 h-[500px] sm:h-[720px] overflow-hidden flex items-center justify-center animate-slide-in-right">
-        <img
-          src={assets.hero_icon}
-          alt="Latest Arrival"
-          className="object-cover w-full h-full transform transition-transform duration-500 ease-in-out hover:scale-105"
-        />
-      </div>
+      <div className="relative w-full aspect-square"> {/* aspect-square keeps it from jumping layout */}
+          <video
+            src={assets.home_video}
+            autoPlay  // Automatically starts the video
+            loop      // Loops the video
+            muted     // Mutes the video (required for autoplay in most browsers)
+            playsInline // Important for iOS to prevent fullscreen
+            className="w-full h-full object-cover" // Ensures video fills the container
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
     </div>
   );
 };

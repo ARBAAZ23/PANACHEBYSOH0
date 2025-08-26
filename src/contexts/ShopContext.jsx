@@ -6,7 +6,7 @@ import axios from "axios";
 
 export const ShopContext = createContext();
 
-const ShopContextProvider = (props) => {
+const ShopContextProvider = ({ children }) => {
   const currency = "$";
   const delivery_fee = 10;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -14,13 +14,13 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
-  const [distance, setDistance] = useState(0); // in KM
+  const [distance, setDistance] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-  // ✅ Load cart + token from localStorage
+  // Load cart + token from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) setCartItems(JSON.parse(savedCart));
@@ -29,12 +29,12 @@ const ShopContextProvider = (props) => {
     if (savedToken) setToken(savedToken);
   }, []);
 
-  // ✅ Save cart to localStorage
+  // Save cart to localStorage
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // ✅ Save/remove token
+  // Save/remove token
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
@@ -43,7 +43,7 @@ const ShopContextProvider = (props) => {
     }
   }, [token]);
 
-  // ✅ Fetch user cart from backend
+  // Fetch user cart
   const getUserCart = async () => {
     if (!token) return;
     try {
@@ -61,7 +61,7 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // ✅ Add to cart
+  // Add to cart
   const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error("Select Product Size");
@@ -94,7 +94,7 @@ const ShopContextProvider = (props) => {
           { itemId, size },
           { headers: { token } }
         );
-        await getUserCart(); // ✅ sync
+        await getUserCart();
       } catch (error) {
         console.log(error);
         toast.error(error.response?.data?.message || error.message);
@@ -103,7 +103,7 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // ✅ Update cart item quantity
+  // Update cart item quantity
   const updateQuantity = async (itemId, size, quantity) => {
     const prevCart = structuredClone(cartItems);
     const cartData = structuredClone(cartItems);
@@ -130,7 +130,7 @@ const ShopContextProvider = (props) => {
           { itemId, size, quantity },
           { headers: { token } }
         );
-        await getUserCart(); // ✅ sync
+        await getUserCart();
       } catch (error) {
         console.log(error);
         toast.error(error.response?.data?.message || error.message);
@@ -139,7 +139,7 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // ✅ Clear cart
+  // Clear cart
   const clearCart = async () => {
     const prevCart = structuredClone(cartItems);
     setCartItems({});
@@ -156,12 +156,12 @@ const ShopContextProvider = (props) => {
       } catch (error) {
         console.error(error);
         toast.error(error.response?.data?.message || error.message);
-        setCartItems(prevCart); // rollback
+        setCartItems(prevCart);
       }
     }
   };
 
-  // ✅ Cart count
+  // Cart count
   const getCartCount = () => {
     let totalCount = 0;
     for (const itemId in cartItems) {
@@ -172,7 +172,7 @@ const ShopContextProvider = (props) => {
     return totalCount;
   };
 
-  // ✅ Cart amount
+  // Cart amount
   const getCartAmount = () => {
     let totalAmount = 0;
     for (const itemId in cartItems) {
@@ -185,7 +185,7 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   };
 
-  // ✅ Shipping cost
+  // Shipping cost
   const calculateShippingCost = () => {
     const costPerKm = 2;
     const cost = distance * costPerKm;
@@ -193,13 +193,13 @@ const ShopContextProvider = (props) => {
     return cost;
   };
 
-  // ✅ Total
+  // Total
   const getTotalAmount = () => {
     const subtotal = getCartAmount();
     return subtotal + delivery_fee + shippingCost;
   };
 
-  // ✅ Fetch products
+  // Fetch products
   const getProductData = async () => {
     try {
       const response = await axios.get(`${backendUrl}api/product/list`);
@@ -225,7 +225,7 @@ const ShopContextProvider = (props) => {
     if (token) getUserCart();
   }, [token]);
 
-  // ✅ Logout
+  // Logout
   const logout = () => {
     setToken("");
     setCartItems({});
@@ -244,6 +244,7 @@ const ShopContextProvider = (props) => {
     showSearch,
     setShowSearch,
     cartItems,
+    setCartItems, // ✅ added
     addToCart,
     updateQuantity,
     getCartCount,
@@ -262,11 +263,7 @@ const ShopContextProvider = (props) => {
     getUserCart,
   };
 
-  return (
-    <ShopContext.Provider value={value}>
-      {props.children}
-    </ShopContext.Provider>
-  );
+  return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 };
 
 export default ShopContextProvider;

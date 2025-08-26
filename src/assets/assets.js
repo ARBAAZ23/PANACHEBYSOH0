@@ -3,7 +3,7 @@ import IMG1_1 from "./IMG_1.1.jpg"
 import IMG1_2 from "./IMG_1.2.jpg";
 import IMG1_3 from "./IMG_1.3.jpg";
 import IMG1_4 from "./IMG_1.4.jpg";
-import logo from "./PanacheBySoh.png";
+import logo from "./icon_logo.png";
 import search_icon from "./icon.png"
 import profile_icon from './profile_icon.png'
 import cart_icon from './cart_icon.png'
@@ -19,10 +19,12 @@ import delete_icon from './delete_icon.png'
 import mastercard_icon from './mastercard_icon.png'
 import cod_icon from './cod_icon.png'
 import razorpay_icon from './razorpay_icon.png'
-import about_us from './about_us.png'
+import about_us from './about_us.jpeg'
 import contact_us from './contact_us.jpg'
+import home_video from './home_video.mp4'
 
 export const assets = {
+  home_video,
   logo,
   IMG_1,
   IMG1_1,

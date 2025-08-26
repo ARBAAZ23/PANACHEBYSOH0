@@ -4,11 +4,13 @@ import { FaInstagram, FaWhatsapp, FaPhoneAlt, FaEnvelope } from 'react-icons/fa'
 
 const Footer = () => {
   return (
-    <div className="bg-gray-100 py-12 px-6 sm:px-20 font-poppins">
-      <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 text-sm text-gray-700">
+    // Use the semantic <footer> tag for the main container
+    <footer className="bg-gray-100 py-12 px-6 sm:px-20 font-poppins">
+      <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] lg:grid-cols-[3fr_1fr_1fr] gap-14 text-sm text-gray-700">
+        
         {/* Column 1: Logo & Description */}
         <div>
-          <img src={assets.logo} className="mb-4 w-44" alt="PanacheBySoh" />
+          <img src={assets.logo} className="mb-4 w-[100px]" alt="PanacheBySoh" />
           <p className="text-gray-600 leading-relaxed">
             <span className="text-lg text-gray-800 font-semibold">PanacheBySoh</span> is your one-stop
             destination for stylish and elegant fashion. Elevate your wardrobe with us.
@@ -17,38 +19,45 @@ const Footer = () => {
 
         {/* Column 2: Quick Links */}
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-4">Quick Links</h3>
-          <ul className="space-y-2">
-            <li><a href="/" className="hover:text-black transition">Home</a></li>
-            <li><a href="/collection" className="hover:text-black transition">Collection</a></li>
-            <li><a href="/about" className="hover:text-black transition">About</a></li>
-            <li><a href="/contact" className="hover:text-black transition">Contact</a></li>
+          <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-wider">Quick Links</h3>
+          <ul className="space-y-3">
+            <li><a href="/" className="hover:text-black transition-colors">Home</a></li>
+            <li><a href="/collection" className="hover:text-black transition-colors">Collection</a></li>
+            <li><a href="/about" className="hover:text-black transition-colors">About</a></li>
+            <li><a href="/contact" className="hover:text-black transition-colors">Contact</a></li>
           </ul>
         </div>
 
         {/* Column 3: Support */}
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-4">Support</h3>
-          <ul className="space-y-2">
-            <li><a href="/faq" className="hover:text-black transition">FAQ</a></li>
-            <li><a href="/returns" className="hover:text-black transition">Return Policy</a></li>
-            <li><a href="/shipping" className="hover:text-black transition">Shipping Info</a></li>
-            <li><a href="/terms" className="hover:text-black transition">Terms & Conditions</a></li>
+          <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-wider">Support</h3>
+          <ul className="space-y-3">
+            <li><a href="/faq" className="hover:text-black transition-colors">FAQ</a></li>
+            <li><a href="/returns" className="hover:text-black transition-colors">Return Policy</a></li>
+            <li><a href="/shipping" className="hover:text-black transition-colors">Shipping Info</a></li>
+            <li><a href="/terms" className="hover:text-black transition-colors">Terms & Conditions</a></li>
           </ul>
         </div>
       </div>
 
       {/* Contact & Social */}
-      <div className="mt-10 flex flex-col sm:flex-row sm:justify-between gap-6 border-t pt-6 text-gray-600 text-sm">
+      <div className="mt-12 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6 border-t pt-8 text-gray-600 text-sm">
         {/* Contact Info */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
             <FaPhoneAlt className="text-gray-500" />
-            <span>+91 98765 43210</span>
+            {/* IMPROVEMENT: Made phone number clickable with the `tel:` protocol */}
+            <a href="tel:+919876543210" className="hover:text-black transition-colors">+44 7442 276 432</a>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <FaEnvelope className="text-gray-500" />
-            <span>support@panachebysoh.com</span>
+            {/* CHANGED: Wrapped email in an <a> tag with a `mailto:` link */}
+            <a 
+              href="mailto:Panachebysoh@gmail.com" 
+              className="hover:text-black transition-colors"
+            >
+              Panachebysoh@gmail.com
+            </a>
           </div>
         </div>
 
@@ -58,15 +67,17 @@ const Footer = () => {
             href="https://www.instagram.com/panachebysoh"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-500 hover:text-black text-xl transition"
+            aria-label="Instagram"
+            className="text-gray-500 hover:text-black text-2xl transition-transform hover:scale-110"
           >
             <FaInstagram />
           </a>
           <a
-            href="https://wa.me/919920433647 "
+            href="https://wa.me/447442276432"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-500 hover:text-black text-xl transition"
+            aria-label="WhatsApp"
+            className="text-gray-500 hover:text-black text-2xl transition-transform hover:scale-110"
           >
             <FaWhatsapp />
           </a>
@@ -74,10 +85,10 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="mt-6 text-center text-xs text-gray-500 font-mono">
+      <div className="mt-10 text-center text-xs text-gray-500">
         © {new Date().getFullYear()} PanacheBySoh. All rights reserved.
       </div>
-    </div>
+    </footer>
   );
 };
 

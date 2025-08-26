@@ -54,18 +54,18 @@ const About = () => {
 
         {/* Text */}
         <div className="w-full md:w-1/2 text-gray-700 space-y-6 animate-slide-in-right">
-          <h3 className="text-3xl font-semibold text-black">Who We Are</h3>
-          <p className="leading-relaxed">
+          <h3 className="text-2xl font-semibold text-black">Who We Are</h3>
+          <p className="text-xm leading-relaxed">
             We’re a dynamic team of designers, developers, and strategists passionate about crafting
             purposeful digital experiences. We partner with visionary brands to build creative,
             scalable, and user-focused solutions that drive results.
           </p>
-          <p className="leading-relaxed">
+          <p className="text-xm leading-relaxed">
             Our journey has been fueled by curiosity, innovation, and a dedication to excellence.
             Every project we undertake is a reflection of our values—collaboration, trust, and
             delivering measurable impact.
           </p>
-          <p className="leading-relaxed">
+          <p className="text-xm leading-relaxed">
             We look forward to growing together, breaking boundaries, and creating digital
             experiences that matter.
           </p>
@@ -73,7 +73,7 @@ const About = () => {
       </div>
 
       {/* Why Choose Us */}
-      <div className="text-center mt-20 animate-fade-in-up">
+      <div className="text-center text-2xl mt-20 animate-fade-in-up">
         <Title text1="WHY " text2="CHOOSE US" />
         <p className="text-gray-500 text-sm max-w-xl mx-auto mt-2">
           Here's why our clients choose to work with us—and why you should too.

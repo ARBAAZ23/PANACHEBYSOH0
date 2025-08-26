@@ -23,10 +23,9 @@ const Navbar = () => {
     <div className="flex items-center justify-between font-medium px-20 max-[639px]:px-4">
       <Link to={"/"}>
         <img
-          src={assets.logo}
-          className="w-[120px] h-[100px]"
-          alt="Logo"
-        />
+  src={assets.logo}
+  className="w-20 h-20 sm:w-24 sm:h-24"
+  alt="Logo"/>
       </Link>
 
       {/* Main Nav */}
@@ -50,11 +49,11 @@ const Navbar = () => {
         <img
           onClick={() => setShowSearch(prev => !prev)}
           src={assets.search_icon}
-          className="w-7 cursor-pointer"
+          className="w-8 cursor-pointer"
           alt="Search"
         />
         <div className="group relative">
-            <img onClick={()=>token ? null : navigate('/login')} src={assets.profile_icon} className="w-8 cursor-pointer" alt="Profile" />
+            <img onClick={()=>token ? null : navigate('/login')} src={assets.profile_icon} className="w-6 cursor-pointer" alt="Profile" />
           {token && <div className="group-hover:block hidden absolute right-0 pt-4 z-50">
             <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-50 text-gray-500 rounded">
               <p className="cursor-pointer hover:text-black">My Profile</p>
@@ -64,7 +63,7 @@ const Navbar = () => {
           </div>}
         </div>
         <Link to="/cart" className="relative">
-          <img src={assets.cart_icon} className="w-7 min-w-7" alt="Cart" />
+          <img src={assets.cart_icon} className="w-6 min-w-6" alt="Cart" />
           <p className="absolute left-[15px] bottom-[15px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
             {getCartCount()}
           </p>

@@ -27,17 +27,15 @@ const Contact = () => {
 
           <div className="space-y-3 sm:space-y-4 text-gray-600">
             <p>
-              PANACHE by SOH<br />
-              Ground Floor, Block A, Fashion Street,<br />
-              Bandra West, Mumbai, Maharashtra - 400050
+              PANACHE by SOH Online Store<br />
             </p>
 
             <p>
-              <span className="font-semibold text-gray-700">Phone:</span> +91 98765 43210
+              <span className="font-semibold text-gray-700">Phone:</span> +44 7442 276 432
             </p>
 
             <p>
-              <span className="font-semibold text-gray-700">Email:</span> contact@panachebysoh.com
+              <span className="font-semibold text-gray-700">Email:</span> Panachebysoh@gmail.com
             </p>
 
             <p>
