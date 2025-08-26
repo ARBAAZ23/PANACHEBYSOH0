@@ -36,7 +36,7 @@ const Hero = () => {
           loop      // Loops the video
           muted     // Mutes the video (required for autoplay in most browsers)
           playsInline // Important for iOS to prevent fullscreen
-          className="w-full h-full object-cover" // Ensures video fills the container
+          className="w-full h-[60vh] object-cover" // Ensures video fills the container
         >
           Your browser does not support the video tag.
         </video>
