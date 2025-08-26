@@ -3,7 +3,9 @@ import { assets } from "../assets/assets.js";
 
 const Hero = () => {
   return (
+    // The main container uses flex-col on mobile and flex-row on larger screens
     <div className="flex flex-col sm:flex-row items-center border border-gray-200 min-h-[720px] overflow-hidden">
+      
       {/* Hero Left Side */}
       <div className="w-full sm:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-10 sm:py-0 animate-slide-in-left">
         <div className="text-[#414141] max-w-md">
@@ -25,19 +27,20 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Hero Right Side */}
-      <div className="relative w-full aspect-square"> {/* aspect-square keeps it from jumping layout */}
-          <video
-            src={assets.home_video}
-            autoPlay  // Automatically starts the video
-            loop      // Loops the video
-            muted     // Mutes the video (required for autoplay in most browsers)
-            playsInline // Important for iOS to prevent fullscreen
-            className="w-full h-full object-cover" // Ensures video fills the container
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div>
+      {/* Hero Right Side (Video) */}
+      {/* --- THIS IS THE CORRECTED PART --- */}
+      <div className="relative w-full sm:w-1/2 h-[60vh] sm:h-auto">
+        <video
+          src={assets.home_video}
+          autoPlay  // Automatically starts the video
+          loop      // Loops the video
+          muted     // Mutes the video (required for autoplay in most browsers)
+          playsInline // Important for iOS to prevent fullscreen
+          className="w-full h-full object-cover" // Ensures video fills the container
+        >
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </div>
   );
 };
