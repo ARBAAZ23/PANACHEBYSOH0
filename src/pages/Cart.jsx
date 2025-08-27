@@ -5,7 +5,7 @@ import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate, getUserCart } =
+  const { products, currency, cartItems, updateQuantity, navigate, getUserCart, token } =
     useContext(ShopContext);
 
   const [cartData, setCartData] = useState([]);
@@ -48,6 +48,15 @@ const Cart = () => {
     const newQty = currentQty + amount;
     if (newQty >= 0) {
       updateQuantity(productId, size, newQty);
+    }
+  };
+
+  // ✅ Handle checkout click
+  const handleCheckout = () => {
+    if (token) {
+      navigate("/place-order");
+    } else {
+      navigate("/login");
     }
   };
 
@@ -132,7 +141,7 @@ const Cart = () => {
             <div className="w-full sm:w-[450px] flex flex-col gap-3">
               <CartTotal productTotal={productTotal} />
               <button
-                onClick={() => navigate("/place-order")}
+                onClick={handleCheckout}
                 className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-900 transition-all duration-300"
               >
                 Proceed to Checkout
