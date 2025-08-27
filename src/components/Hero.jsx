@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect, useRef } from "react"; // 1. Import useEffect and useRef
 import { assets } from "../assets/assets.js";
 
 const Hero = () => {
+  // 2. Create a ref to hold the video element
+  const videoRef = useRef(null);
+
+  // 3. Use an effect to play the video when the component mounts
+  useEffect(() => {
+    // The .play() method returns a promise which can be rejected 
+    // if autoplay is blocked by the browser.
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        // This catch block is important to handle cases where autoplay is prevented.
+        console.error("Video autoplay was prevented:", error);
+        // You could optionally show a play button here for the user to manually start the video.
+      });
+    }
+  }, []); // The empty dependency array [] ensures this effect runs only once
+
   return (
     <div className="flex flex-col sm:flex-row items-center border border-gray-200 min-h-[720px] overflow-hidden">
       {/* Hero Left Side */}
@@ -26,18 +42,19 @@ const Hero = () => {
       </div>
 
       {/* Hero Right Side */}
-      <div className="relative w-full sm:w-1/2 h-[70vh] sm:h-auto"> {/* aspect-square keeps it from jumping layout */}
-          <video
-            src={assets.home_video}
-            autoPlay  // Automatically starts the video
-            loop      // Loops the video
-            muted     // Mutes the video (required for autoplay in most browsers)
-            playsInline // Important for iOS to prevent fullscreen
-            className="w-full h-full object-cover" // Ensures video fills the container
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div>
+      <div className="relative w-full sm:w-1/2 h-[70vh] sm:h-auto">
+        <video
+          ref={videoRef} // 4. Attach the ref to the video element
+          src={assets.home_video}
+          autoPlay  // Still good to keep as a fallback
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </div>
   );
 };
