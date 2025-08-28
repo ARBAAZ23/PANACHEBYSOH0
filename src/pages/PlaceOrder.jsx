@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
-  const { getCartAmount, token, backendUrl, cartItems, delivery_fee } =
+  const { getCartAmount, token, backendUrl, cartItems, delivery_fee,setCartItems } =
     useContext(ShopContext);
 
   const [formData, setFormData] = useState({
@@ -61,6 +61,34 @@ const PlaceOrder = () => {
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const initPay = (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Order Payment",
+      description: "Order Payment",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        console.log(response);
+        try {
+          const data = await axios.post(backendUrl + 'api/order/verifyRazorpay',response,{headers:{token}})
+          if(data.success){
+            navigate('/orders')
+            setCartItems({})
+          }
+
+        } catch (error) {
+          console.log(error);
+          toast.error(error)
+        }
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   // --- Handle input change ---
@@ -118,63 +146,61 @@ const PlaceOrder = () => {
 
   // --- Submit Handler ---
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return; // ❌ stop if invalid
+    e.preventDefault();
+    if (!validateForm()) return; // ❌ stop if invalid
 
-  try {
-    const orderData = {
-      items: finalProducts,
-      amount: getCartAmount() + delivery_fee,
-      address: formData,
-      paymentMethod,
-    };
+    try {
+      const orderData = {
+        items: finalProducts,
+        amount: getCartAmount() + delivery_fee,
+        address: formData,
+        paymentMethod,
+      };
 
-    let response; // ✅ declare outside switch
+      let response;
+      let responseRazorpay; // ✅ declare outside switch
 
-    switch (paymentMethod) {
-      case "cod":
-        response = await axios.post(
-          `${backendUrl}api/order/place`,
-          orderData,
-          { headers: { token } }
-        );
-        break;
+      switch (paymentMethod) {
+        case "cod":
+          response = await axios.post(
+            `${backendUrl}api/order/place`,
+            orderData,
+            { headers: { token } }
+          );
+          break;
 
-      case "razorpay":
-        response = await axios.post(
-          `${backendUrl}api/order/razorpay`,
-          orderData,
-          { headers: { token } }
-        );
+        case "razorpay":
+          responseRazorpay = await axios.post(
+            `${backendUrl}api/order/razorpay`,
+            orderData,
+            { headers: { token } }
+          );
 
-        if (response.data.success) {
-          console.log("✅ Razorpay order created:", response.data);
+          if (responseRazorpay.data.success) {
+            initPay(
+              // "✅ Razorpay order created:",
+              responseRazorpay.data.order
+            );
+          }
+          break;
 
-          // You’ll need to open Razorpay checkout here
-          // Example (pseudo-code):
-          // openRazorpayCheckout(response.data.orderId);
+        default:
+          toast.error("⚠️ Please select a payment method");
+          return;
+      }
 
-        }
-        break;
-
-      default:
-        toast.error("⚠️ Please select a payment method");
-        return;
+      // ✅ Common success check
+      if (response?.data?.success) {
+        toast.success("🎉 Order placed successfully!");
+        navigate("/orders");
+      } else {
+        toast.error(response?.data?.message || "Order failed");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      toast.error("Something went wrong. Please try again.");
     }
-
-    // ✅ Common success check
-    if (response?.data?.success) {
-      toast.success("🎉 Order placed successfully!");
-      navigate("/orders");
-    } else {
-      toast.error(response?.data?.message || "Order failed");
-    }
-  } catch (error) {
-    console.error("Error placing order:", error);
-    toast.error("Something went wrong. Please try again.");
-  }
-};
-
+  };
 
   return (
     <motion.form
