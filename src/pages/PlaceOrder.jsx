@@ -118,34 +118,63 @@ const PlaceOrder = () => {
 
   // --- Submit Handler ---
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return; // ❌ stop if invalid
+  e.preventDefault();
+  if (!validateForm()) return; // ❌ stop if invalid
 
-    try {
-      const orderData = {
-        items: finalProducts,
-        amount: getCartAmount() + delivery_fee,
-        address: formData,
-        paymentMethod,
-      };
+  try {
+    const orderData = {
+      items: finalProducts,
+      amount: getCartAmount() + delivery_fee,
+      address: formData,
+      paymentMethod,
+    };
 
-      const response = await axios.post(
-        `${backendUrl}api/order/place`,
-        orderData,
-        { headers: { token } }
-      );
+    let response; // ✅ declare outside switch
 
-      if (response.data.success) {
-        toast.success("🎉 Order placed successfully!");
-        navigate("/orders");
-      } else {
-        toast.error(response.data.message || "Order failed");
-      }
-    } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("Something went wrong. Please try again.");
+    switch (paymentMethod) {
+      case "cod":
+        response = await axios.post(
+          `${backendUrl}api/order/place`,
+          orderData,
+          { headers: { token } }
+        );
+        break;
+
+      case "razorpay":
+        response = await axios.post(
+          `${backendUrl}api/order/razorpay`,
+          orderData,
+          { headers: { token } }
+        );
+
+        if (response.data.success) {
+          console.log("✅ Razorpay order created:", response.data);
+
+          // You’ll need to open Razorpay checkout here
+          // Example (pseudo-code):
+          // openRazorpayCheckout(response.data.orderId);
+
+        }
+        break;
+
+      default:
+        toast.error("⚠️ Please select a payment method");
+        return;
     }
-  };
+
+    // ✅ Common success check
+    if (response?.data?.success) {
+      toast.success("🎉 Order placed successfully!");
+      navigate("/orders");
+    } else {
+      toast.error(response?.data?.message || "Order failed");
+    }
+  } catch (error) {
+    console.error("Error placing order:", error);
+    toast.error("Something went wrong. Please try again.");
+  }
+};
+
 
   return (
     <motion.form
