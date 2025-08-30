@@ -58,8 +58,8 @@ const Login = () => {
   };
 
   const handleForgotPassword = () => {
-    toast.info("Forgot password flow coming soon 🔑");
-  };
+  navigate("/forgot-password"); // 👈 send user to ForgotPassword.jsx
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 px-4">
