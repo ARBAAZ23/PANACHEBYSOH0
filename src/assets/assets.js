@@ -22,9 +22,11 @@ import razorpay_icon from './razorpay_icon.png'
 import about_us from './about_us.jpeg'
 import contact_us from './contact_us.jpg'
 import home_video from './home_video.mp4'
+import google_icon from './google_icon.png'
 
 export const assets = {
   home_video,
+  google_icon,
   logo,
   IMG_1,
   IMG1_1,

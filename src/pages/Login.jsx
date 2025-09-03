@@ -2,14 +2,24 @@ import React, { useState, useContext, useEffect } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ShieldCheck } from "lucide-react";
+import { assets } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
+  const { token, setToken, backendUrl } = useContext(ShopContext);
+  const navigate = useNavigate();
 
   const [mode, setMode] = useState("Login"); // "Login" or "Sign Up"
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Redirect if already logged in
@@ -19,112 +29,212 @@ const Login = () => {
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" })); // clear error on typing
+  };
+
+  // Validate inputs
+  const validateForm = () => {
+    const { name, email, password, confirmPassword } = formData;
+    let newErrors = {};
+
+    if (mode === "Sign Up" && !name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+    } else {
+      const strongPass =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#._-]).{6,}$/;
+      if (!strongPass.test(password)) {
+        newErrors.password =
+          "Password must include uppercase, lowercase, number, and special character";
+      }
+    }
+
+    if (mode === "Sign Up" && password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!validateForm()) return;
 
+    setLoading(true);
     try {
       const endpoint = mode === "Login" ? "login" : "register";
+      const payload =
+        mode === "Login"
+          ? { email: formData.email, password: formData.password }
+          : {
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+            };
+
       const { data } = await axios.post(
         `${backendUrl}api/user/${endpoint}`,
-        formData
+        payload
       );
 
-      if (data?.token) {
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
-        toast.success(`${mode} successful ✅`);
-        navigate("/");
+      if (data.success) {
+        if (mode === "Login") {
+          setToken(data.token);
+          localStorage.setItem("token", data.token);
+          toast.success("Login successful ✅");
+          navigate("/");
+        } else {
+          // after registration -> go to OTP
+          toast.success(data.message || "Registration successful! Verify your email 🔑");
+          navigate("/verify-otp", { state: { email: formData.email } });
+        }
       } else {
-        toast.error("No token received from server");
+        // Handle specific messages from the backend
+        if (data.message.toLowerCase().includes("exists") && mode === "Sign Up") {
+          toast.info("This email is already registered. Switching to login mode.");
+          setMode("Login");
+        } else if (data.message.toLowerCase().includes("verify your email first")) {
+          toast.warn(data.message);
+          navigate("/verify-otp", { state: { email: formData.email } }); // Guide them to OTP page
+        }
+        else {
+          toast.error(data.message);
+        }
       }
     } catch (err) {
       const message = err.response?.data?.message || "Something went wrong!";
-      if (message.toLowerCase().includes("exists")) {
-        toast.error("This email is already registered, please login.");
-        setMode("Login");
-      } else {
-        toast.error(message);
-      }
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    toast.info("Google login coming soon 🚀");
-  };
-
-  const handleForgotPassword = () => {
-    toast.info("Forgot password flow coming soon 🔑");
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 px-4">
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
+    <div className="flex items-center justify-center min-h-screen px-4">
+      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8 border border-gray-200">
         {/* Title */}
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        <h2 className="text-2xl font-bold text-center text-black mb-6">
           {mode === "Login" ? "Welcome to PanacheBySoh" : "Create Your Account"}
         </h2>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {mode === "Sign Up" && (
-            <div className="relative">
-              <User className="absolute left-3 top-3 text-gray-400" size={20} />
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
+            <div>
+              <div className="relative">
+                <User className="absolute left-3 top-3 text-gray-500" size={20} />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full border border-gray-400 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-black"
+                  required
+                />
+              </div>
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              )}
             </div>
           )}
 
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
+          <div>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 text-gray-500" size={20} />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-black"
+                required
+              />
+            </div>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+          <div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 text-gray-500" size={20} />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-black"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-3 text-gray-500 hover:text-black"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
+
+          {mode === "Sign Up" && (
+            <div>
+              <div className="relative">
+                <ShieldCheck
+                  className="absolute left-3 top-3 text-gray-500"
+                  size={20}
+                />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full border border-gray-400 rounded-lg pl-10 p-3 focus:outline-none focus:ring-2 focus:ring-black"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute right-3 top-3 text-gray-500 hover:text-black"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+          )}
 
           {mode === "Login" && (
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-blue-500 hover:underline"
+                onClick={() =>
+                  toast.info("Forgot password flow coming soon 🔑")
+                }
+                className="text-sm text-gray-600 hover:underline"
               >
                 Forgot Password?
               </button>
@@ -134,20 +244,24 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+            className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
           >
             {loading ? "Please wait..." : mode === "Login" ? "Login" : "Sign Up"}
           </button>
         </form>
 
         {/* Toggle between login and signup */}
-        <div className="mt-6 text-center text-gray-600">
+        <div className="mt-6 text-center text-gray-700">
           {mode === "Login" ? (
             <p>
               Don’t have an account?{" "}
               <button
-                onClick={() => setMode("Sign Up")}
-                className="text-blue-500 hover:underline font-medium"
+                onClick={() => {
+                  setMode("Sign Up");
+                  setErrors({}); // Clear errors when switching modes
+                  setFormData({ name: "", email: "", password: "", confirmPassword: "" }); // Clear form data
+                }}
+                className="text-black font-medium underline"
               >
                 Sign Up
               </button>
@@ -156,8 +270,12 @@ const Login = () => {
             <p>
               Already have an account?{" "}
               <button
-                onClick={() => setMode("Login")}
-                className="text-blue-500 hover:underline font-medium"
+                onClick={() => {
+                  setMode("Login");
+                  setErrors({}); // Clear errors when switching modes
+                  setFormData({ name: "", email: "", password: "", confirmPassword: "" }); // Clear form data
+                }}
+                className="text-black font-medium underline"
               >
                 Login
               </button>
@@ -168,9 +286,10 @@ const Login = () => {
         {/* Google Login */}
         <div className="mt-6">
           <button
-            onClick={handleGoogleLogin}
-            className="w-full bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors"
+            onClick={() => toast.info("Google login coming soon 🚀")}
+            className="w-full flex items-center justify-center gap-3 border border-gray-400 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
           >
+            <img src={assets.google_icon} alt="Google" className="w-5 h-5" />
             Continue with Google
           </button>
         </div>
