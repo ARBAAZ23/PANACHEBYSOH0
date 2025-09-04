@@ -2,21 +2,23 @@ import React, { useState, useContext } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { useLocation, useNavigate } from "react-router-dom";
 
-const OtpVerification = () => { // Removed `email` prop, use useLocation
-  const { setToken, navigate, backendUrl } = useContext(ShopContext);
-  const location = useLocation(); // Get location object
-  const email = location.state?.email; // Extract email from state
+const OtpVerification = () => {
+  const { setToken, backendUrl } = useContext(ShopContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const email = location.state?.email;
+  const fromForgotPassword = location.state?.fromForgotPassword || false; // 🔑 check if coming from forgot password
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // If email is not present in state, redirect to login or home
   if (!email) {
     toast.error("Email not provided for OTP verification.");
-    navigate("/login"); // Or to the home page
-    return null; // Don't render component if no email
+    navigate("/login");
+    return null;
   }
 
   // 🔹 Handle OTP submit
@@ -29,18 +31,28 @@ const OtpVerification = () => { // Removed `email` prop, use useLocation
 
     setLoading(true);
     try {
-      const { data } = await axios.post(`${backendUrl}api/user/verify-otp`, {
+      // 🔑 Choose endpoint based on flow
+      const endpoint = fromForgotPassword ? "verify-forgot-otp" : "verify-otp";
+
+      const { data } = await axios.post(`${backendUrl}api/user/${endpoint}`, {
         email,
         otp,
       });
 
-      if (data.success) { // Check data.success
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
-        toast.success(data.message || "Email verified successfully 🎉");
-        navigate("/");
+      if (data.success) {
+        if (fromForgotPassword) {
+          // 🔑 Forgot password flow → go to reset password
+          toast.success("OTP verified ✅ Please reset your password");
+          navigate("/reset-password", { state: { email } });
+        } else {
+          // 🔑 Normal signup verification → log user in
+          setToken(data.token);
+          localStorage.setItem("token", data.token);
+          toast.success(data.message || "Email verified successfully 🎉");
+          navigate("/");
+        }
       } else {
-        toast.error(data.message || "Invalid response from server");
+        toast.error(data.message || "Invalid OTP, try again!");
       }
     } catch (err) {
       const msg = err.response?.data?.message || "Invalid OTP, try again!";
@@ -53,10 +65,13 @@ const OtpVerification = () => { // Removed `email` prop, use useLocation
   // 🔹 Resend OTP
   const resendOtp = async () => {
     try {
-      const { data } = await axios.post(`${backendUrl}api/user/resend-otp`, {
+      const endpoint = fromForgotPassword ? "forgot-password" : "resend-otp";
+
+      const { data } = await axios.post(`${backendUrl}api/user/${endpoint}`, {
         email,
       });
-      if(data.success) {
+
+      if (data.success) {
         toast.success(data.message || "OTP resent successfully ✅");
       } else {
         toast.error(data.message || "Failed to resend OTP");
@@ -70,7 +85,7 @@ const OtpVerification = () => { // Removed `email` prop, use useLocation
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8 border border-gray-200">
         <h2 className="text-2xl font-bold text-center text-black mb-6">
-          Verify Your Email
+          Verify OTP
         </h2>
         <p className="text-center text-gray-600 mb-4">
           Enter the OTP sent to <span className="font-medium">{email}</span>
@@ -85,7 +100,6 @@ const OtpVerification = () => { // Removed `email` prop, use useLocation
             className="w-full border border-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-black"
             maxLength={6}
           />
-
           <button
             type="submit"
             disabled={loading}
@@ -99,7 +113,7 @@ const OtpVerification = () => { // Removed `email` prop, use useLocation
           <p className="text-gray-600">
             Didn’t receive the code?{" "}
             <button
-              type="button" // Important to specify type="button" to prevent form submission
+              type="button"
               onClick={resendOtp}
               className="text-black font-medium underline"
             >

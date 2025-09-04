@@ -3,8 +3,9 @@ import { ShopContext } from "../contexts/ShopContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Eye, EyeOff, Mail, Lock, User, ShieldCheck } from "lucide-react";
-import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+//import { jwtDecode } from "jwt-decode"; // ✅ correct import
 
 const Login = () => {
   const { token, setToken, backendUrl } = useContext(ShopContext);
@@ -29,10 +30,10 @@ const Login = () => {
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors((prev) => ({ ...prev, [e.target.name]: "" })); // clear error on typing
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
-  // Validate inputs
+  // ✅ Validate inputs
   const validateForm = () => {
     const { name, email, password, confirmPassword } = formData;
     let newErrors = {};
@@ -65,6 +66,7 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ Handle login/signup submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -93,20 +95,26 @@ const Login = () => {
           toast.success("Login successful ✅");
           navigate("/");
         } else {
-          // after registration -> go to OTP
-          toast.success(data.message || "Registration successful! Verify your email 🔑");
+          toast.success(
+            data.message || "Registration successful! Verify your email 🔑"
+          );
           navigate("/verify-otp", { state: { email: formData.email } });
         }
       } else {
-        // Handle specific messages from the backend
-        if (data.message.toLowerCase().includes("exists") && mode === "Sign Up") {
-          toast.info("This email is already registered. Switching to login mode.");
+        if (
+          data.message.toLowerCase().includes("exists") &&
+          mode === "Sign Up"
+        ) {
+          toast.info(
+            "This email is already registered. Switching to login mode."
+          );
           setMode("Login");
-        } else if (data.message.toLowerCase().includes("verify your email first")) {
+        } else if (
+          data.message.toLowerCase().includes("verify your email first")
+        ) {
           toast.warn(data.message);
-          navigate("/verify-otp", { state: { email: formData.email } }); // Guide them to OTP page
-        }
-        else {
+          navigate("/verify-otp", { state: { email: formData.email } });
+        } else {
           toast.error(data.message);
         }
       }
@@ -115,6 +123,31 @@ const Login = () => {
       toast.error(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ✅ Handle Google login
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential;
+      // contains name, email, picture
+
+      const { data } = await axios.post(
+        `${backendUrl}api/user/google-login`,
+        { token }
+      );
+
+      if (data.success) {
+        setToken(data.token);
+        localStorage.setItem("token", data.token);
+        toast.success("Google login successful ✅");
+        navigate("/");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Google login failed ❌");
     }
   };
 
@@ -212,11 +245,7 @@ const Login = () => {
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                   className="absolute right-3 top-3 text-gray-500 hover:text-black"
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.confirmPassword && (
@@ -231,9 +260,7 @@ const Login = () => {
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={() =>
-                  toast.info("Forgot password flow coming soon 🔑")
-                }
+                onClick={() => navigate("/forgot-password")}
                 className="text-sm text-gray-600 hover:underline"
               >
                 Forgot Password?
@@ -258,8 +285,8 @@ const Login = () => {
               <button
                 onClick={() => {
                   setMode("Sign Up");
-                  setErrors({}); // Clear errors when switching modes
-                  setFormData({ name: "", email: "", password: "", confirmPassword: "" }); // Clear form data
+                  setErrors({});
+                  setFormData({ name: "", email: "", password: "", confirmPassword: "" });
                 }}
                 className="text-black font-medium underline"
               >
@@ -272,8 +299,8 @@ const Login = () => {
               <button
                 onClick={() => {
                   setMode("Login");
-                  setErrors({}); // Clear errors when switching modes
-                  setFormData({ name: "", email: "", password: "", confirmPassword: "" }); // Clear form data
+                  setErrors({});
+                  setFormData({ name: "", email: "", password: "", confirmPassword: "" });
                 }}
                 className="text-black font-medium underline"
               >
@@ -285,13 +312,14 @@ const Login = () => {
 
         {/* Google Login */}
         <div className="mt-6">
-          <button
-            onClick={() => toast.info("Google login coming soon 🚀")}
-            className="w-full flex items-center justify-center gap-3 border border-gray-400 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-          >
-            <img src={assets.google_icon} alt="Google" className="w-5 h-5" />
-            Continue with Google
-          </button>
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => toast.error("Google login failed ❌")}
+            theme="outline"
+            size="large"
+            text="signin_with"
+            shape="rectangular"
+          />
         </div>
       </div>
     </div>

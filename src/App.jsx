@@ -13,6 +13,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import OtpVerification from "./components/OtpVerification";
+import ResetPassword from "./components/ResetPassword";
+import ForgotPassword from "./components/ForgotPassword";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -32,6 +34,8 @@ const App = () => {
         <Route path="/cart" element={<Cart/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/verify-otp" element={<OtpVerification />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/place-order" element={<PlaceOrder/>} />
         <Route path="/orders" element={<Orders/>} />
       </Routes>
