@@ -104,7 +104,7 @@ const Product = () => {
           </h1>
 
           <p className="text-2xl text-orange-600 font-semibold">
-            ${productData.price}
+            £{productData.price}
           </p>
 
           <p className="text-gray-500 text-sm">
