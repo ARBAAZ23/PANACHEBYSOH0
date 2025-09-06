@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, addToCart } = useContext(ShopContext);
+  const { products, addToCart, toggleWishlist, isInWishlist } = useContext(ShopContext); // ✅ FIXED
   const [productData, setProductData] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -161,6 +161,7 @@ const Product = () => {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            {/* Add to Cart */}
             <motion.button
               whileHover={{ scale: selectedSize ? 1.05 : 1 }}
               whileTap={{ scale: selectedSize ? 0.95 : 1 }}
@@ -175,12 +176,18 @@ const Product = () => {
               Add to Cart
             </motion.button>
 
+            {/* Wishlist */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg transition duration-200"
+              className={`w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-lg transition duration-200 ${
+                isInWishlist(productData._id)
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+              }`}
+              onClick={() => toggleWishlist(productData._id)}
             >
-              Wishlist
+              {isInWishlist(productData._id) ? "❤️ In Wishlist" : "♡ Wishlist"}
             </motion.button>
           </div>
         </motion.div>

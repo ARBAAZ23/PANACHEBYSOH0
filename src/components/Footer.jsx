@@ -47,7 +47,7 @@ const Footer = () => {
           <div className="flex items-center gap-3">
             <FaPhoneAlt className="text-gray-500" />
             {/* IMPROVEMENT: Made phone number clickable with the `tel:` protocol */}
-            <a href="tel:+919876543210" className="hover:text-black transition-colors">+44 7442 276 432</a>
+            <a href="tel:+44 7442 276 432" className="hover:text-black transition-colors">+44 7442 276 432</a>
           </div>
           <div className="flex items-center gap-3">
             <FaEnvelope className="text-gray-500" />

@@ -14,16 +14,20 @@ const ShopContextProvider = ({ children }) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [wishlist, setWishlist] = useState([]); // ✅ wishlist state
   const [distance, setDistance] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-  // Load cart + token from localStorage
+  // Load cart + token + wishlist from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) setCartItems(JSON.parse(savedCart));
+
+    const savedWishlist = localStorage.getItem("wishlist");
+    if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
 
     const savedToken = localStorage.getItem("token");
     if (savedToken) setToken(savedToken);
@@ -33,6 +37,11 @@ const ShopContextProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
+
+  // Save wishlist to localStorage
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
 
   // Save/remove token
   useEffect(() => {
@@ -229,10 +238,38 @@ const ShopContextProvider = ({ children }) => {
   const logout = () => {
     setToken("");
     setCartItems({});
+    setWishlist([]);
     localStorage.removeItem("token");
     localStorage.removeItem("cartItems");
+    localStorage.removeItem("wishlist");
     navigate("/login");
     toast.success("Logged out successfully");
+  };
+
+  // ✅ Wishlist functions
+  const addToWishlist = (itemId, size = null) => {
+    const exists = wishlist.some(
+      (item) => item.itemId === itemId && item.size === size
+    );
+    if (exists) {
+      toast.info("Already in wishlist");
+      return;
+    }
+    setWishlist((prev) => [...prev, { itemId, size }]);
+    toast.success("Added to wishlist");
+  };
+
+  const removeFromWishlist = (itemId, size = null) => {
+    setWishlist((prev) =>
+      prev.filter((item) => !(item.itemId === itemId && item.size === size))
+    );
+    toast.success("Removed from wishlist");
+  };
+
+  const isInWishlist = (itemId, size = null) => {
+    return wishlist.some(
+      (item) => item.itemId === itemId && item.size === size
+    );
   };
 
   const value = {
@@ -244,7 +281,7 @@ const ShopContextProvider = ({ children }) => {
     showSearch,
     setShowSearch,
     cartItems,
-    setCartItems, // ✅ added
+    setCartItems,
     addToCart,
     updateQuantity,
     getCartCount,
@@ -261,6 +298,12 @@ const ShopContextProvider = ({ children }) => {
     setToken,
     logout,
     getUserCart,
+
+    // ✅ Wishlist
+    wishlist,
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

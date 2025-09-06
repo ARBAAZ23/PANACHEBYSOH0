@@ -40,7 +40,8 @@ const PlaceOrder = () => {
       if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
         error = "Enter a valid email address";
       }
-      if (name === "zipcode" && !/^\d{4,10}$/.test(value)) {
+      // ✅ Worldwide zipcode (letters, numbers, spaces, hyphens)
+      if (name === "zipcode" && !/^[A-Za-z0-9\s-]{3,10}$/.test(value)) {
         error = "Enter a valid zipcode";
       }
       if (name === "phone" && !/^\d{7,15}$/.test(value)) {
@@ -62,36 +63,6 @@ const PlaceOrder = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  // const initPay = (order) => {
-  //   const options = {
-  //     key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-  //     amount: order.amount,
-  //     currency: order.currency,
-  //     name: "Order Payment",
-  //     description: "Order Payment",
-  //     order_id: order.id,
-  //     receipt: order.receipt,
-  //     handler: async (response) => {
-  //       console.log(response);
-  //       try {
-         
-  //         const data = await axios.post(backendUrl + 'api/order/verifyRazorpay',response,{headers:{token}})
-  //        console.log(data)
-  //         if(data.success){
-  //           navigate('/orders')
-  //           setCartItems({})
-  //         }
-
-  //       } catch (error) {
-  //         console.log(error);
-  //         toast.error(error) 
-  //       }
-  //     },
-  //   };
-  //   const rzp = new window.Razorpay(options);
-  //   rzp.open();
-  // };
 
   // --- Handle input change ---
   const handleChange = (e) => {
@@ -160,8 +131,6 @@ const PlaceOrder = () => {
       };
 
       let response;
-      // let responseRazorpay; // ✅ declare outside switch
-
       switch (paymentMethod) {
         case "cod":
           response = await axios.post(
@@ -170,21 +139,6 @@ const PlaceOrder = () => {
             { headers: { token } }
           );
           break;
-
-        // case "razorpay":
-        //   responseRazorpay = await axios.post(
-        //     `${backendUrl}api/order/razorpay`,
-        //     orderData,
-        //     { headers: { token } }
-        //   );
-
-        //   if (responseRazorpay.data.success) {
-        //     initPay(
-        //       // "✅ Razorpay order created:",
-        //       responseRazorpay.data.order
-        //     );
-        //   }
-        //   break;
 
         default:
           toast.error("⚠️ Please select a payment method");

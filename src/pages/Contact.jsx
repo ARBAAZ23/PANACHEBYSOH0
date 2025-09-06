@@ -47,7 +47,7 @@ const Contact = () => {
       </div>
 
       {/* Newsletter Section */}
-      <NewsLetterBox />
+      {/* <NewsLetterBox /> */}
     </div>
   );
 };
