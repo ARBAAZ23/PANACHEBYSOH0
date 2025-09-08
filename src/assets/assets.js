@@ -23,6 +23,7 @@ import about_us from './about_us.jpeg'
 import contact_us from './contact_us.jpg'
 import home_video from './home_video.mp4'
 import google_icon from './google_icon.png'
+import paypal_icon from './paypal_icon.png'
 
 export const assets = {
   home_video,
@@ -49,7 +50,8 @@ export const assets = {
   cod_icon,
   razorpay_icon,
   about_us,
-  contact_us
+  contact_us,
+  paypal_icon
 };
 
 export const products = [

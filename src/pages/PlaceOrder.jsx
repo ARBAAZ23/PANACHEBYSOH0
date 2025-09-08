@@ -119,44 +119,42 @@ const PlaceOrder = () => {
 
   // --- Submit Handler ---
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return; // ❌ stop if invalid
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    try {
-      const orderData = {
-        items: finalProducts,
-        amount: getCartAmount() + delivery_fee,
-        address: formData,
-        paymentMethod,
-      };
+  try {
+    const orderData = {
+      items: finalProducts,
+      amount: getCartAmount() + delivery_fee,
+      address: formData,
+    };
 
-      let response;
-      switch (paymentMethod) {
-        case "cod":
-          response = await axios.post(
-            `${backendUrl}api/order/place`,
-            orderData,
-            { headers: { token } }
-          );
-          break;
-
-        default:
-          toast.error("⚠️ Please select a payment method");
-          return;
-      }
-
-      // ✅ Common success check
-      if (response?.data?.success) {
-        toast.success("🎉 Order placed successfully!");
+    if (paymentMethod === "cod") {
+      const response = await axios.post(
+        `${backendUrl}api/order/place`,
+        orderData,
+        { headers: { token } }
+      );
+      if (response.data.success) {
+        toast.success("🎉 COD Order placed!");
         navigate("/orders");
-      } else {
-        toast.error(response?.data?.message || "Order failed");
       }
-    } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("Something went wrong. Please try again.");
+    } else if (paymentMethod === "paypal") {
+      const response = await axios.post(
+        `${backendUrl}api/order/paypal`,
+        orderData,
+        { headers: { token } }
+      );
+      if (response.data.success) {
+        window.location.href = response.data.approvalUrl; // ✅ redirect PayPal
+      }
     }
-  };
+  } catch (error) {
+    toast.error("❌ Order failed");
+    console.error(error);
+  }
+};
+
 
   return (
     <motion.form
@@ -376,24 +374,20 @@ const PlaceOrder = () => {
               <p className="font-medium">Cash on Delivery</p>
             </div>
 
-            {/* Razorpay Option */}
+            {/* PayPal Option */}
             <div
-              onClick={() => setPaymentMethod("razorpay")}
+              onClick={() => setPaymentMethod("paypal")}
               className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${
-                paymentMethod === "razorpay" ? "border-green-500" : ""
+                paymentMethod === "paypal" ? "border-green-500" : ""
               }`}
             >
               <div
                 className={`min-w-4 h-4 border rounded-full ${
-                  paymentMethod === "razorpay" ? "bg-green-500" : "bg-white"
+                  paymentMethod === "paypal" ? "bg-green-500" : "bg-white"
                 }`}
               ></div>
-              <img
-                className="h-6 mx-3"
-                src={assets.razorpay_icon}
-                alt="Razorpay"
-              />
-              <p className="font-medium">RazorPay</p>
+              <img className="h-6 mx-3" src={assets.paypal_icon} alt="PayPal" />
+              <p className="font-medium">PayPal</p>
             </div>
           </div>
 
