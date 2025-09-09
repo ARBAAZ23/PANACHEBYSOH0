@@ -21,37 +21,6 @@ const ShopContextProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-  // Load cart + token + wishlist from localStorage
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cartItems");
-    if (savedCart) setCartItems(JSON.parse(savedCart));
-
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
-
-    const savedToken = localStorage.getItem("token");
-    if (savedToken) setToken(savedToken);
-  }, []);
-
-  // Save cart to localStorage
-  useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  // Save wishlist to localStorage
-  useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-  }, [wishlist]);
-
-  // Save/remove token
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
-  }, [token]);
-
   // Fetch user cart
   const getUserCart = async () => {
     if (!token) return;
@@ -77,7 +46,9 @@ const ShopContextProvider = ({ children }) => {
       return;
     }
 
-    const productExists = products.some((p) => String(p._id) === String(itemId));
+    const productExists = products.some(
+      (p) => String(p._id) === String(itemId)
+    );
     if (!productExists) {
       toast.error("Product not found");
       return;
@@ -246,8 +217,24 @@ const ShopContextProvider = ({ children }) => {
     toast.success("Logged out successfully");
   };
 
-  // ✅ Wishlist functions
-  const addToWishlist = (itemId, size = null) => {
+  // ✅ Fetch wishlist from backend
+  const getUserWishlist = async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(backendUrl + "api/wishlist/list", {
+        headers: { token },
+      });
+      if (response.data.success) {
+        setWishlist(response.data.wishlist);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
+  // ✅ Add to wishlist
+  const addToWishlist = async (itemId, size = null) => {
     const exists = wishlist.some(
       (item) => item.itemId === itemId && item.size === size
     );
@@ -255,22 +242,125 @@ const ShopContextProvider = ({ children }) => {
       toast.info("Already in wishlist");
       return;
     }
-    setWishlist((prev) => [...prev, { itemId, size }]);
+
+    setWishlist((prev) => [...prev, { itemId, size }]); // optimistic update
     toast.success("Added to wishlist");
+
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "api/wishlist/add",
+          { itemId, size },
+          { headers: { token } }
+        );
+        await getUserWishlist();
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || error.message);
+      }
+    }
   };
 
-  const removeFromWishlist = (itemId, size = null) => {
+  // ✅ Remove from wishlist
+  const removeFromWishlist = async (itemId, size = null) => {
     setWishlist((prev) =>
       prev.filter((item) => !(item.itemId === itemId && item.size === size))
     );
     toast.success("Removed from wishlist");
+
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "api/wishlist/remove",
+          { itemId, size },
+          { headers: { token } }
+        );
+        await getUserWishlist();
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || error.message);
+      }
+    }
   };
 
-  const isInWishlist = (itemId, size = null) => {
-    return wishlist.some(
-      (item) => item.itemId === itemId && item.size === size
-    );
-  };
+  // Check if product is in wishlist
+const isInWishlist = (productId) => {
+  return wishlist.some(
+    (item) =>
+      String(item._id) === String(productId) || String(item.itemId) === String(productId)
+  );
+};
+
+
+  // Toggle wishlist
+const toggleWishlist = async (productId) => {
+  try {
+    if (!token) {
+      toast.error("Please login to manage wishlist");
+      return;
+    }
+
+    if (isInWishlist(productId)) {
+      // remove
+      await axios.post(
+        backendUrl + "api/wishlist/remove",
+        { productId },
+        { headers: { token } }
+      );
+      setWishlist((prev) =>
+        prev.filter(
+          (item) =>
+            String(item._id) !== String(productId) &&
+            String(item.itemId) !== String(productId)
+        )
+      );
+      toast.info("Removed from wishlist");
+    } else {
+      // add
+      await axios.post(
+        backendUrl + "api/wishlist/add",
+        { productId },
+        { headers: { token } }
+      );
+      setWishlist((prev) => [...prev, { _id: productId }]);
+      toast.success("Added to wishlist");
+    }
+  } catch (error) {
+    console.error("Wishlist error:", error);
+    toast.error(error.response?.data?.message || error.message);
+  }
+};
+
+  // Load cart + token + wishlist from localStorage
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    if (savedCart) setCartItems(JSON.parse(savedCart));
+
+    const savedWishlist = localStorage.getItem("wishlist");
+    if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) setToken(savedToken);
+  }, []);
+
+  // Save cart to localStorage
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  // Save wishlist to localStorage
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  // Save/remove token
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
 
   const value = {
     products,
@@ -304,6 +394,7 @@ const ShopContextProvider = ({ children }) => {
     addToWishlist,
     removeFromWishlist,
     isInWishlist,
+    toggleWishlist,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

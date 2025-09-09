@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, addToCart, toggleWishlist, isInWishlist } = useContext(ShopContext); // ✅ FIXED
+  const { products, addToCart, toggleWishlist, isInWishlist } =
+    useContext(ShopContext); // ✅ FIXED
   const [productData, setProductData] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -14,7 +15,9 @@ const Product = () => {
 
   // ✅ Load product when products change or productId changes
   useEffect(() => {
-    const product = products.find((item) => String(item._id) === String(productId));
+    const product = products.find(
+      (item) => String(item._id) === String(productId)
+    );
     setProductData(product || null);
     setCurrentImageIndex(0);
 
@@ -22,7 +25,10 @@ const Product = () => {
       let sizesArr = [];
       if (Array.isArray(product.sizes)) {
         sizesArr = product.sizes;
-      } else if (typeof product.sizes === "string" && product.sizes.trim() !== "") {
+      } else if (
+        typeof product.sizes === "string" &&
+        product.sizes.trim() !== ""
+      ) {
         sizesArr = product.sizes.split(",").map((s) => s.trim());
       }
       setFormattedSizes(sizesArr);
@@ -108,7 +114,8 @@ const Product = () => {
           </p>
 
           <p className="text-gray-500 text-sm">
-            <span className="font-medium">Category:</span> {productData.category}
+            <span className="font-medium">Category:</span>{" "}
+            {productData.category}
           </p>
 
           {/* Product Details */}
@@ -116,12 +123,26 @@ const Product = () => {
             <div className="bg-gray-100 rounded-md p-4 text-sm text-gray-700 border border-gray-200 space-y-2">
               {productData.productDetails.map((detail, i) => (
                 <div key={i} className="grid grid-cols-2 gap-2 text-sm">
-                  <p><span className="font-medium">Color:</span> {detail.color}</p>
-                  <p><span className="font-medium">Fabric:</span> {detail.fabric}</p>
-                  <p><span className="font-medium">Cut:</span> {detail.cut}</p>
-                  <p><span className="font-medium">Slip:</span> {detail.slip}</p>
-                  <p><span className="font-medium">Dupatta:</span> {detail.dupatta}</p>
-                  <p><span className="font-medium">Trouser:</span> {detail.trouser}</p>
+                  <p>
+                    <span className="font-medium">Color:</span> {detail.color}
+                  </p>
+                  <p>
+                    <span className="font-medium">Fabric:</span> {detail.fabric}
+                  </p>
+                  <p>
+                    <span className="font-medium">Cut:</span> {detail.cut}
+                  </p>
+                  <p>
+                    <span className="font-medium">Slip:</span> {detail.slip}
+                  </p>
+                  <p>
+                    <span className="font-medium">Dupatta:</span>{" "}
+                    {detail.dupatta}
+                  </p>
+                  <p>
+                    <span className="font-medium">Trouser:</span>{" "}
+                    {detail.trouser}
+                  </p>
                 </div>
               ))}
             </div>

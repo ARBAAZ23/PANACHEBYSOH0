@@ -5,14 +5,15 @@ import { ShopContext } from "../contexts/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const { setShowSearch, getCartCount , navigate , token, setToken ,setCartItems} = useContext(ShopContext);
+  const { setShowSearch, getCartCount, navigate, token, setToken, setCartItems } = useContext(ShopContext);
 
-  const logout = ()=>{
-    navigate('/login')
-    localStorage.removeItem('token')
-    setToken('')
-    setCartItems({}) 
-  }
+  const logout = () => {
+    setToken("");
+    setCartItems({});
+    localStorage.removeItem("token");
+    localStorage.removeItem("cartItems");
+    navigate("/login");
+  };
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -20,12 +21,10 @@ const Navbar = () => {
   }, [visible]);
 
   return (
-    <div className="flex items-center justify-between font-medium px-20 max-[639px]:px-4">
-      <Link to={"/"}>
-        <img
-  src={assets.logo}
-  className="w-20 h-20 sm:w-24 sm:h-24"
-  alt="Logo"/>
+    <div className="flex items-center justify-between font-medium px-20 max-[639px]:px-4 py-3 shadow-sm bg-white sticky top-0 z-50">
+      {/* Logo */}
+      <Link to="/">
+        <img src={assets.logo} className="w-20 h-20 sm:w-24 sm:h-24" alt="Logo" />
       </Link>
 
       {/* Main Nav */}
@@ -46,27 +45,47 @@ const Navbar = () => {
 
       {/* Icons */}
       <div className="flex items-center gap-6">
+        {/* Search */}
         <img
-          onClick={() => setShowSearch(prev => !prev)}
+          onClick={() => setShowSearch((prev) => !prev)}
           src={assets.search_icon}
           className="w-8 cursor-pointer"
           alt="Search"
         />
+
+        {/* Profile */}
         <div className="group relative">
-            <img onClick={()=>token ? null : navigate('/login')} src={assets.profile_icon} className="w-6 cursor-pointer" alt="Profile" />
-          {token && <div className="group-hover:block hidden absolute right-0 pt-4 z-50">
-            <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-50 text-gray-500 rounded">
-              <p className="cursor-pointer hover:text-black">My Profile</p>
-              <p onClick={()=>navigate('/orders')} className="cursor-pointer hover:text-black">Orders</p>
-              <p onClick={logout} className="cursor-pointer hover:text-black">Logout</p>
+          <img
+            onClick={() => (token ? null : navigate("/login"))}
+            src={assets.profile_icon}
+            className="w-6 cursor-pointer"
+            alt="Profile"
+          />
+          {token && (
+            <div className="group-hover:block hidden absolute right-0 pt-4 z-50">
+              <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-50 text-gray-500 rounded shadow-md">
+                <p onClick={() => navigate("/profile")} className="cursor-pointer hover:text-black">
+                  My Profile
+                </p>
+                <p onClick={() => navigate("/orders")} className="cursor-pointer hover:text-black">
+                  Orders
+                </p>
+                <p onClick={logout} className="cursor-pointer hover:text-black">
+                  Logout
+                </p>
+              </div>
             </div>
-          </div>}
+          )}
         </div>
+
+        {/* Cart */}
         <Link to="/cart" className="relative">
           <img src={assets.cart_icon} className="w-6 min-w-6" alt="Cart" />
-          <p className="absolute left-[15px] bottom-[15px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-            {getCartCount()}
-          </p>
+          {getCartCount() > 0 && (
+            <p className="absolute left-[15px] bottom-[15px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
+              {getCartCount()}
+            </p>
+          )}
         </Link>
 
         {/* Hamburger Menu */}
@@ -80,11 +99,11 @@ const Navbar = () => {
 
       {/* Mobile Sidebar Menu */}
       <div
-        className={`fixed top-0 right-0 bottom-0  h-full z-50 bg-white transition-all duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 bottom-0 h-full z-50 bg-white transition-all duration-300 ease-in-out ${
           visible ? "w-3/4 max-w-xs shadow-lg" : "w-0"
         } overflow-x-hidden`}
       >
-        <div className="flex flex-col text-gray-600">
+        <div className="flex flex-col text-gray-600 h-full">
           <div
             onClick={() => setVisible(false)}
             className="flex items-center gap-4 p-3 cursor-pointer"
@@ -103,6 +122,24 @@ const Navbar = () => {
               {item}
             </NavLink>
           ))}
+
+          {token ? (
+            <div className="flex flex-col gap-2 pl-6 mt-auto pb-6">
+              <p onClick={() => { navigate("/profile"); setVisible(false); }} className="cursor-pointer hover:text-black">
+                My Profile
+              </p>
+              <p onClick={() => { navigate("/orders"); setVisible(false); }} className="cursor-pointer hover:text-black">
+                Orders
+              </p>
+              <p onClick={() => { logout(); setVisible(false); }} className="cursor-pointer hover:text-black">
+                Logout
+              </p>
+            </div>
+          ) : (
+            <p onClick={() => { navigate("/login"); setVisible(false); }} className="cursor-pointer pl-6 mt-auto pb-6 hover:text-black">
+              Login
+            </p>
+          )}
         </div>
       </div>
     </div>
