@@ -18,6 +18,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import Profile from "./pages/Profile";
+import ScrollToTop from "./utils/ScrollToTop";
 
 
 const App = () => {
@@ -26,6 +27,7 @@ const App = () => {
       <ToastContainer position="bottom-right" autoClose={2000}/>
       <Navbar/>
       <SearchBar/>
+      <ScrollToTop /> {/* 👈 Always reset scroll on route change */}
       <Routes>
         <Route path="/" element={<Home/>} />\
         <Route path="/collection" element={<Collection/>} />

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { ShopContext } from "../contexts/ShopContext";
 import reviews from "../assets/review";
 import { motion } from "framer-motion";
+import RelatedProduct from '../components/RelatedProduct'
 
 const Product = () => {
   const { productId } = useParams();
@@ -213,7 +214,13 @@ const Product = () => {
           </div>
         </motion.div>
       </motion.div>
-
+      {/* Related Products */}
+      {productData && (
+        <RelatedProduct
+          category={productData.category}
+          currentProductId={productData._id}
+        />
+      )}
       {/* Reviews */}
       <motion.div
         className="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6 space-y-4"
