@@ -6,15 +6,33 @@ import ProductItem from "./ProductItem";
 const LatestCollection = () => {
   const { products } = useContext(ShopContext);
   const [latestProduct, setLatestProduct] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    setLatestProduct(products.slice(0, 10));
-  }, [products]);
+    // Detect screen size
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+
+    handleResize(); // Run once on mount
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    // Limit products based on screen
+    if (isMobile) {
+      setLatestProduct(products.slice(0, 6)); // show 6 on mobile
+    } else {
+      setLatestProduct(products.slice(0, 5)); // show 5 on laptop/desktop
+    }
+  }, [products, isMobile]);
 
   return (
     <div className="my-12 px-4 sm:px-8 animate-fade-up">
       {/* Section Title */}
-      <div className="text-center py-8 transition duration-700 ease-in-out">
+      <div className="text-2xl text-center py-8 transition duration-700 ease-in-out">
         <Title text1={"LATEST "} text2={"COLLECTIONS"} />
         <p className="w-11/12 sm:w-3/4 mx-auto text-sm sm:text-base text-gray-600 mt-4 leading-relaxed">
           Discover our new arrivals in women's fashion, showcasing the latest

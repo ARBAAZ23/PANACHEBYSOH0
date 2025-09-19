@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes,Route } from "react-router-dom";    
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
 import About from "./pages/About";
@@ -16,34 +16,39 @@ import OtpVerification from "./components/OtpVerification";
 import ResetPassword from "./components/ResetPassword";
 import ForgotPassword from "./components/ForgotPassword";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
+import "react-toastify/dist/ReactToastify.css";
 import Profile from "./pages/Profile";
 import ScrollToTop from "./utils/ScrollToTop";
-
+import PaypalSuccess from "./utils/PaypalSuccess";
+import PaymentCancelled from "./utils/PaymentCancelled";
+// import PaypalSuccess from "./utils/PaypalSuccess";
+// import PaymentCancelled from './utils/PaymentCancelled'
 
 const App = () => {
   return (
     <div className="px-4 sm:px-[5vm] md:px-[7vm] lg:px-[9vm]">
-      <ToastContainer position="bottom-right" autoClose={2000}/>
-      <Navbar/>
-      <SearchBar/>
+      <ToastContainer position="bottom-right" autoClose={2000} />
+      <Navbar />
+      <SearchBar />
       <ScrollToTop /> {/* 👈 Always reset scroll on route change */}
       <Routes>
-        <Route path="/" element={<Home/>} />\
-        <Route path="/collection" element={<Collection/>} />
-        <Route path="/about" element={<About/>} />
-        <Route path="/contact" element={<Contact/>} />
-        <Route path="/product/:productId" element={<Product/>} />
-        <Route path="/cart" element={<Cart/>} />
-        <Route path="/login" element={<Login/>} />
+        <Route path="/" element={<Home />} />\
+        <Route path="/collection" element={<Collection />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/product/:productId" element={<Product />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/verify-otp" element={<OtpVerification />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/place-order" element={<PlaceOrder/>} />
-        <Route path="/orders" element={<Orders/>} />
-        <Route path="/profile" element={<Profile/>}/>
+        <Route path="/place-order" element={<PlaceOrder />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/payment-success" element={<PaypalSuccess />} />
+        <Route path="/payment-cancelled" element={<PaymentCancelled />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

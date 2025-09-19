@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ShopContext } from "../contexts/ShopContext";
-import reviews from "../assets/review";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import RelatedProduct from '../components/RelatedProduct'
+import Reviews from '../components/Reviews'
 
 const Product = () => {
   const { productId } = useParams();
@@ -221,44 +222,10 @@ const Product = () => {
           currentProductId={productData._id}
         />
       )}
-      {/* Reviews */}
-      <motion.div
-        className="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6 space-y-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
-        <h2 className="text-2xl font-bold text-gray-800">Customer Reviews</h2>
-        {reviews.map((review, index) => (
-          <motion.div
-            key={review.id}
-            className="bg-gray-50 border rounded-lg p-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.4 }}
-          >
-            <div className="flex justify-between items-center">
-              <p className="font-medium text-gray-900">{review.name}</p>
-              <p className="text-sm text-gray-500">{review.date}</p>
-            </div>
-            <div className="flex items-center mt-2 mb-2">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`w-5 h-5 ${
-                    i < review.rating ? "text-yellow-400" : "text-gray-300"
-                  }`}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.168 3.602a1 1 0 00.95.69h3.905c.969 0 1.371 1.24.588 1.81l-3.158 2.293a1 1 0 00-.364 1.118l1.168 3.602c.3.921-.755 1.688-1.54 1.118L10 13.347l-3.158 2.293c-.784.57-1.838-.197-1.539-1.118l1.168-3.602a1 1 0 00-.364-1.118L2.95 9.029c-.783-.57-.38-1.81.588-1.81h3.905a1 1 0 00.95-.69l1.168-3.602z" />
-                </svg>
-              ))}
-            </div>
-            <p className="text-gray-700">{review.comment}</p>
-          </motion.div>
-        ))}
-      </motion.div>
+       {/* Reviews Section */}
+      <div className="mt-10">
+        <Reviews /> {/* ⬅️ show reviews here */}
+      </div>
     </section>
   );
 };

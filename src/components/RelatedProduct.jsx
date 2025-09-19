@@ -35,8 +35,15 @@ const RelatedProduct = ({ category, currentProductId }) => {
             <img
               src={Array.isArray(item.image) ? item.image[0] : item.image}
               alt={item.name || "Related product"}
-              className="w-full h-60 object-cover"
+              className="
+    w-full 
+    h-60 sm:h-50 md:h-56 lg:h-64 xl:h-72 
+    object-contain lg:object-cover
+    bg-white
+    rounded-2xl
+  "
             />
+
             <div className="p-3 space-y-1">
               <h3 className="text-sm font-medium text-gray-900 truncate">
                 {item.name || "Unnamed product"}

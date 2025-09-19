@@ -1,41 +1,94 @@
-import React from 'react';
-import { assets } from '../assets/assets';
-import { FaInstagram, FaWhatsapp, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
+import React from "react";
+import { assets } from "../assets/assets";
+import {
+  FaInstagram,
+  FaWhatsapp,
+  FaPhoneAlt,
+  FaEnvelope,
+} from "react-icons/fa";
 
 const Footer = () => {
   return (
     // Use the semantic <footer> tag for the main container
     <footer className="bg-gray-100 py-12 px-6 sm:px-20 font-poppins">
       <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] lg:grid-cols-[3fr_1fr_1fr] gap-14 text-sm text-gray-700">
-        
         {/* Column 1: Logo & Description */}
         <div>
-          <img src={assets.logo} className="mb-4 w-[100px]" alt="PanacheBySoh" />
+          <img
+            src={assets.logo}
+            className="mb-4 w-[100px]"
+            alt="PanacheBySoh"
+          />
           <p className="text-gray-600 leading-relaxed">
-            <span className="text-lg text-gray-800 font-semibold">PanacheBySoh</span> is your one-stop
-            destination for stylish and elegant fashion. Elevate your wardrobe with us.
+            <span className="text-lg text-gray-800 font-semibold">
+              PanacheBySoh
+            </span>{" "}
+            is your one-stop destination for stylish and elegant fashion.
+            Elevate your wardrobe with us.
           </p>
         </div>
 
         {/* Column 2: Quick Links */}
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-wider">Quick Links</h3>
+          <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-wider">
+            Quick Links
+          </h3>
           <ul className="space-y-3">
-            <li><a href="/" className="hover:text-black transition-colors">Home</a></li>
-            <li><a href="/collection" className="hover:text-black transition-colors">Collection</a></li>
-            <li><a href="/about" className="hover:text-black transition-colors">About</a></li>
-            <li><a href="/contact" className="hover:text-black transition-colors">Contact</a></li>
+            <li>
+              <a href="/" className="hover:text-black transition-colors">
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="/collection"
+                className="hover:text-black transition-colors"
+              >
+                Collection
+              </a>
+            </li>
+            <li>
+              <a href="/about" className="hover:text-black transition-colors">
+                About
+              </a>
+            </li>
+            <li>
+              <a href="/contact" className="hover:text-black transition-colors">
+                Contact
+              </a>
+            </li>
           </ul>
         </div>
 
         {/* Column 3: Support */}
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-wider">Support</h3>
+          <h3 className="text-base font-bold text-gray-900 mb-4 uppercase tracking-wider">
+            Support
+          </h3>
           <ul className="space-y-3">
-            <li><a href="/faq" className="hover:text-black transition-colors">FAQ</a></li>
-            <li><a href="/returns" className="hover:text-black transition-colors">Return Policy</a></li>
-            <li><a href="/shipping" className="hover:text-black transition-colors">Shipping Info</a></li>
-            <li><a href="/terms" className="hover:text-black transition-colors">Terms & Conditions</a></li>
+            <li>
+              <a href="/faq" className="hover:text-black transition-colors">
+                FAQ
+              </a>
+            </li>
+            <li>
+              <a href="/returns" className="hover:text-black transition-colors">
+                Return Policy
+              </a>
+            </li>
+            <li>
+              <a
+                href="/shipping"
+                className="hover:text-black transition-colors"
+              >
+                Shipping Info
+              </a>
+            </li>
+            <li>
+              <a href="/terms" className="hover:text-black transition-colors">
+                Terms & Conditions
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -47,13 +100,18 @@ const Footer = () => {
           <div className="flex items-center gap-3">
             <FaPhoneAlt className="text-gray-500" />
             {/* IMPROVEMENT: Made phone number clickable with the `tel:` protocol */}
-            <a href="tel:+44 7442 276 432" className="hover:text-black transition-colors">+44 7442 276 432</a>
+            <a
+              href="tel:+44 7442 276 432"
+              className="hover:text-black transition-colors"
+            >
+              +44 7442 276 432
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <FaEnvelope className="text-gray-500" />
             {/* CHANGED: Wrapped email in an <a> tag with a `mailto:` link */}
-            <a 
-              href="mailto:Panachebysoh@gmail.com" 
+            <a
+              href="mailto:Panachebysoh@gmail.com"
               className="hover:text-black transition-colors"
             >
               Panachebysoh@gmail.com
@@ -86,7 +144,7 @@ const Footer = () => {
 
       {/* Footer Bottom */}
       <div className="mt-10 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} PanacheBySoh. All rights reserved.
+        © since 2017 PanacheBySoh. All rights reserved.
       </div>
     </footer>
   );
