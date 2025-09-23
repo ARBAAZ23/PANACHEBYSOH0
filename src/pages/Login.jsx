@@ -5,7 +5,6 @@ import axios from "axios";
 import { Eye, EyeOff, Mail, Lock, User, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-//import { jwtDecode } from "jwt-decode"; // ✅ correct import
 
 const Login = () => {
   const { token, setToken, backendUrl } = useContext(ShopContext);
@@ -130,7 +129,6 @@ const Login = () => {
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const token = credentialResponse.credential;
-      // contains name, email, picture
 
       const { data } = await axios.post(
         `${backendUrl}api/user/google-login`,
@@ -152,10 +150,10 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8 border border-gray-200">
+    <div className="flex items-center justify-center min-h-[60vh] bg-gray-50 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md sm:max-w-lg lg:max-w-xl p-6 sm:p-8 lg:p-8 border border-gray-200">
         {/* Title */}
-        <h2 className="text-2xl font-bold text-center text-black mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-black mb-6">
           {mode === "Login" ? "Welcome to PanacheBySoh" : "Create Your Account"}
         </h2>
 
@@ -181,6 +179,7 @@ const Login = () => {
             </div>
           )}
 
+          {/* Email */}
           <div>
             <div className="relative">
               <Mail className="absolute left-3 top-3 text-gray-500" size={20} />
@@ -199,6 +198,7 @@ const Login = () => {
             )}
           </div>
 
+          {/* Password */}
           <div>
             <div className="relative">
               <Lock className="absolute left-3 top-3 text-gray-500" size={20} />
@@ -224,6 +224,7 @@ const Login = () => {
             )}
           </div>
 
+          {/* Confirm Password */}
           {mode === "Sign Up" && (
             <div>
               <div className="relative">
@@ -256,6 +257,7 @@ const Login = () => {
             </div>
           )}
 
+          {/* Forgot Password (only login mode) */}
           {mode === "Login" && (
             <div className="flex justify-end">
               <button
@@ -268,6 +270,7 @@ const Login = () => {
             </div>
           )}
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -286,7 +289,12 @@ const Login = () => {
                 onClick={() => {
                   setMode("Sign Up");
                   setErrors({});
-                  setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+                  setFormData({
+                    name: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                  });
                 }}
                 className="text-black font-medium underline"
               >
@@ -300,7 +308,12 @@ const Login = () => {
                 onClick={() => {
                   setMode("Login");
                   setErrors({});
-                  setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+                  setFormData({
+                    name: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                  });
                 }}
                 className="text-black font-medium underline"
               >
@@ -311,7 +324,7 @@ const Login = () => {
         </div>
 
         {/* Google Login */}
-        <div className="mt-6">
+        <div className="mt-6 flex justify-center">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => toast.error("Google login failed ❌")}
