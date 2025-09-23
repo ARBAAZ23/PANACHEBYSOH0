@@ -3,17 +3,19 @@ import { useParams } from "react-router-dom";
 import { ShopContext } from "../contexts/ShopContext";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import RelatedProduct from '../components/RelatedProduct'
-import Reviews from '../components/Reviews'
+import RelatedProduct from "../components/RelatedProduct";
+import Reviews from "../components/Reviews";
+import { Share2, Copy, Facebook, Twitter, Linkedin, MessageCircle } from "lucide-react";
 
 const Product = () => {
   const { productId } = useParams();
   const { products, addToCart, toggleWishlist, isInWishlist } =
-    useContext(ShopContext); // ✅ FIXED
+    useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [formattedSizes, setFormattedSizes] = useState([]);
+  const [shareOpen, setShareOpen] = useState(false);
 
   // ✅ Load product when products change or productId changes
   useEffect(() => {
@@ -48,6 +50,29 @@ const Product = () => {
   const images = Array.isArray(productData.image)
     ? productData.image
     : [productData.image];
+
+  const productUrl = window.location.href;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(productUrl);
+    alert("Link copied to clipboard ✅");
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: productData.name,
+          text: "Check out this product!",
+          url: productUrl,
+        });
+      } catch (err) {
+        console.log("Share cancelled", err);
+      }
+    } else {
+      setShareOpen(!shareOpen);
+    }
+  };
 
   return (
     <section className="min-h-screen bg-[#f9f9f9] px-4 py-10 sm:px-8 font-sans">
@@ -183,7 +208,7 @@ const Product = () => {
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 relative">
             {/* Add to Cart */}
             <motion.button
               whileHover={{ scale: selectedSize ? 1.05 : 1 }}
@@ -212,9 +237,81 @@ const Product = () => {
             >
               {isInWishlist(productData._id) ? "❤️ In Wishlist" : "♡ Wishlist"}
             </motion.button>
+
+            {/* Share Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleNativeShare}
+              className="w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+            >
+              <Share2 className="inline mr-2" size={18} />
+              Share
+            </motion.button>
+
+            {/* Share Dropdown (fallback for desktop) */}
+            {shareOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute top-full mt-2 right-0 bg-white shadow-lg rounded-lg p-4 w-56 z-50 space-y-3"
+              >
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
+                >
+                  <Copy size={16} /> Copy Link
+                </button>
+
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(
+                    `Check this out: ${productUrl}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-700 hover:text-green-600"
+                >
+                  <MessageCircle size={16} /> WhatsApp
+                </a>
+
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    productUrl
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
+                >
+                  <Facebook size={16} /> Facebook
+                </a>
+
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                    productUrl
+                  )}&text=Check+this+out!`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-700 hover:text-sky-500"
+                >
+                  <Twitter size={16} /> Twitter
+                </a>
+
+                <a
+                  href={`https://www.linkedin.com/shareArticle?url=${encodeURIComponent(
+                    productUrl
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-700"
+                >
+                  <Linkedin size={16} /> LinkedIn
+                </a>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       </motion.div>
+
       {/* Related Products */}
       {productData && (
         <RelatedProduct
@@ -222,7 +319,8 @@ const Product = () => {
           currentProductId={productData._id}
         />
       )}
-       {/* Reviews Section */}
+
+      {/* Reviews Section */}
       <div className="mt-10">
         <Reviews /> {/* ⬅️ show reviews here */}
       </div>
