@@ -14,18 +14,6 @@ import {
 const About = () => {
   const values = [
     {
-      icon: <FaGlobe className="text-2xl text-blue-600" />,
-      title: "Global Perspective",
-      description:
-        "Our fabrics cater to a worldwide audience, blending cultural roots with modern designs.",
-    },
-    {
-      icon: <FaRocket className="text-2xl text-red-600" />,
-      title: "Future Driven",
-      description:
-        "We embrace innovation to bring new textures, patterns, and sustainable fabrics to life.",
-    },
-    {
       icon: <FaCheckCircle className="text-2xl text-green-500" />,
       title: "Quality First",
       description:
@@ -34,12 +22,6 @@ const About = () => {
   ];
 
   const features = [
-    {
-      icon: <FaUsers className="text-3xl text-indigo-600" />,
-      title: "Experienced Craftsmanship",
-      description:
-        "Our artisans and designers bring decades of expertise, weaving tradition into every fabric.",
-    },
     {
       icon: <FaLightbulb className="text-3xl text-yellow-500" />,
       title: "Innovative Trends",
@@ -64,11 +46,7 @@ const About = () => {
     <section className="bg-gray-50 py-16 border-t overflow-hidden">
       {/* Section Title */}
       <div className="text-center text-3xl mb-12 animate-fade-in-up">
-        <Title text1="ABOUT" text2="US" />
-        <p className="mt-2 text-gray-500 text-sm max-w-xl mx-auto">
-          Learn more about <span className="font-semibold">Panache by Soh</span>
-          , our vision, and the luxury fabrics that define our brand.
-        </p>
+        <Title text1="ABOUT " text2="US" />
       </div>
 
       {/* Brand Story */}
@@ -85,46 +63,31 @@ const About = () => {
         {/* Text */}
         <div className="w-full md:w-1/2 text-gray-700 space-y-6 animate-slide-in-right">
           <h3 className="text-2xl font-semibold text-black">Who We Are</h3>
-          <p className="text-sm leading-relaxed italic text-indigo-700 font-medium">
-            “We put the Fab in Fabric.”  
-            Where tradition flirts with trend. Panache by Soh transforms exquisite fabrics into statement pieces, blending cultural heritage with modern elegance.
+          <p className="text-sm leading-relaxed italic text-black font-medium">
+            “We put the Fab in Fabric.” Where tradition flirts with trend.
+            Panache by Soh transforms exquisite fabrics into statement pieces,
+            blending cultural heritage with modern elegance.
           </p>
           <p className="text-sm leading-relaxed">
-            Every stitch tells a story, every silhouette turns heads—because
-            luxury isn’t just worn, <span className="font-semibold">it’s lived.</span>
+            Panache by Soh is where timeless elegance meets modern
+            individuality. Founded with a passion for redefining modest fashion,
+            we curate unique Indo western pieces that blend contemporary
+            silhouettes with cultural sophistication. Each design is
+            thoughtfully created to celebrate femininity, confidence, and
+            self-expression — without compromising on grace or comfort.
           </p>
           <p className="text-sm leading-relaxed">
-            At Panache by Soh, we specialize in premium fabrics that fuse tradition with modernity.
-            From timeless handwoven textiles to contemporary chic designs, our
-            collections are curated for those who seek elegance in every thread.
+            Our aesthetic is modern modest chic — a seamless fusion of glamour
+            yet wearable styles, luxurious fabrics, and intricate detailing.
+            Every piece is crafted to stand out while staying true to the values
+            of refinement and originality.
           </p>
           <p className="text-sm leading-relaxed">
-            Our fabrics don’t just drape your style—they define it. Designed for
-            both everyday sophistication and high-fashion statements, we deliver
-            materials that inspire creativity and confidence.
+            At Panache, we believe fashion should be more than just beautiful —
+            it should be empowering. Our collections are designed to help you
+            own your style with pride. Step into your power. Make modesty
+            magnetic.
           </p>
-        </div>
-      </div>
-
-      {/* Mission & Vision */}
-      <div className="bg-white py-12 px-6 md:px-20 rounded-xl shadow-lg max-w-6xl mx-auto mb-20">
-        <div className="grid md:grid-cols-2 gap-10 text-gray-700">
-          <div>
-            <h4 className="text-xl font-semibold text-black mb-3">Our Mission</h4>
-            <p className="text-sm leading-relaxed">
-              To redefine the fabric industry by blending tradition with modern
-              innovation—offering customers timeless materials that inspire
-              unforgettable fashion.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-xl font-semibold text-black mb-3">Our Vision</h4>
-            <p className="text-sm leading-relaxed">
-              To become a global leader in luxury fabrics, celebrated for
-              heritage craftsmanship, trendsetting designs, and sustainable
-              innovation.
-            </p>
-          </div>
         </div>
       </div>
 

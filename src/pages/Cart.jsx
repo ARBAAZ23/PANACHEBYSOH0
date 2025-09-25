@@ -3,10 +3,18 @@ import { ShopContext } from "../contexts/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import {Link} from "react-router-dom"
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate, getUserCart, token } =
-    useContext(ShopContext);
+  const {
+    products,
+    currency,
+    cartItems,
+    updateQuantity,
+    navigate,
+    getUserCart,
+    token,
+  } = useContext(ShopContext);
 
   const [cartData, setCartData] = useState([]);
   const [productTotal, setProductTotal] = useState(0);
@@ -25,7 +33,9 @@ const Cart = () => {
       for (const size in cartItems[productId]) {
         const quantity = cartItems[productId][size];
         if (quantity > 0) {
-          const product = products.find((p) => String(p._id) === String(productId));
+          const product = products.find(
+            (p) => String(p._id) === String(productId)
+          );
           tempData.push({ _id: productId, size, quantity, product });
 
           if (product) {
@@ -67,9 +77,17 @@ const Cart = () => {
       </div>
 
       {cartData.length === 0 ? (
-        <p className="text-gray-500 text-center py-20 text-lg">
-          🛒 Your cart is empty. Go grab something!
-        </p>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <p className="text-gray-500 text-lg mb-6">
+            🛒 Your cart is empty. Go grab something!
+          </p>
+          <Link
+            to="/collection"
+            className="px-6 py-3 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition"
+          >
+            Go to Collection
+          </Link>
+        </div>
       ) : (
         <>
           <div className="space-y-6">

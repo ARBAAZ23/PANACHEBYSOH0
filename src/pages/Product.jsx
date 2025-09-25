@@ -5,7 +5,14 @@ import { ShopContext } from "../contexts/ShopContext";
 import { motion } from "framer-motion";
 import RelatedProduct from "../components/RelatedProduct";
 import Reviews from "../components/Reviews";
-import { Share2, Copy, Facebook, Twitter, Linkedin, MessageCircle } from "lucide-react";
+import {
+  Share2,
+  Copy,
+  Facebook,
+  Twitter,
+  Linkedin,
+  MessageCircle,
+} from "lucide-react";
 
 const Product = () => {
   const { productId } = useParams();
@@ -322,7 +329,7 @@ const Product = () => {
 
       {/* Reviews Section */}
       <div className="mt-10">
-        <Reviews /> {/* ⬅️ show reviews here */}
+        <Reviews productId={productId} /> {/* ⬅️ show reviews here */}
       </div>
     </section>
   );

@@ -7,7 +7,7 @@ const Reviews = ({ productId }) => {
   const { backendUrl, token, user } = useContext(ShopContext); // ✅ include user
 
   console.log("user:", user);
-console.log("token:", token);
+  console.log("token:", token);
 
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
@@ -33,7 +33,7 @@ console.log("token:", token);
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ require token
+          token: token,
         },
         body: JSON.stringify({
           ...newReview,
@@ -65,7 +65,6 @@ console.log("token:", token);
 
       {/* ✅ Show review form only if user is logged in */}
       {user && token ? (
-        
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex items-center gap-2">
             <label className="font-medium">Rating:</label>
@@ -101,9 +100,7 @@ console.log("token:", token);
           </button>
         </form>
       ) : (
-        <p className="text-gray-500 italic">
-          Please login to write a review.
-        </p>
+        <p className="text-gray-500 italic">Please login to write a review.</p>
       )}
 
       {/* ✅ Reviews list */}

@@ -8,13 +8,13 @@ const Contact = () => {
     <div className="animate-fade-in-up font-poppins text-gray-800 bg-white">
       {/* Title Section */}
       <div className="text-center text-xl sm:text-2xl pt-12 sm:pt-16 border-t border-gray-200">
-        <Title text1="CONTACT" text2="US" />
+        <Title text1="CONTACT " text2="US" />
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto mt-12 sm:mt-16 mb-20 sm:mb-28 px-4 sm:px-8 md:px-20 flex flex-col md:flex-row items-center gap-10 sm:gap-12">
         
-        {/* Image */}
+       {/* Image */}
         <img
           src={assets.contact_us}
           alt="Contact Illustration"

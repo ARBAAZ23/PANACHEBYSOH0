@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, { useState, useContext, useEffect } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import { toast } from "react-toastify";
@@ -7,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
-  const { token, setToken, backendUrl } = useContext(ShopContext);
+  const { token, setToken, setUser, backendUrl } = useContext(ShopContext);
   const navigate = useNavigate();
 
   const [mode, setMode] = useState("Login"); // "Login" or "Sign Up"
@@ -22,17 +23,18 @@ const Login = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
+  // ✅ Redirect if already logged in
   useEffect(() => {
     if (token) navigate("/");
   }, [token, navigate]);
 
+  // ✅ Handle form input change
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
-  // ✅ Validate inputs
+  // ✅ Form validation
   const validateForm = () => {
     const { name, email, password, confirmPassword } = formData;
     let newErrors = {};
@@ -65,7 +67,7 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Handle login/signup submit
+  // ✅ Handle Login / Sign Up submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -90,6 +92,7 @@ const Login = () => {
       if (data.success) {
         if (mode === "Login") {
           setToken(data.token);
+          setUser(data.user);
           localStorage.setItem("token", data.token);
           toast.success("Login successful ✅");
           navigate("/");
@@ -130,13 +133,13 @@ const Login = () => {
     try {
       const token = credentialResponse.credential;
 
-      const { data } = await axios.post(
-        `${backendUrl}api/user/google-login`,
-        { token }
-      );
+      const { data } = await axios.post(`${backendUrl}api/user/google-login`, {
+        token,
+      });
 
       if (data.success) {
         setToken(data.token);
+        setUser(data.user);
         localStorage.setItem("token", data.token);
         toast.success("Google login successful ✅");
         navigate("/");
@@ -159,10 +162,14 @@ const Login = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Full Name (Sign Up Only) */}
           {mode === "Sign Up" && (
             <div>
               <div className="relative">
-                <User className="absolute left-3 top-3 text-gray-500" size={20} />
+                <User
+                  className="absolute left-3 top-3 text-gray-500"
+                  size={20}
+                />
                 <input
                   type="text"
                   name="name"
@@ -224,7 +231,7 @@ const Login = () => {
             )}
           </div>
 
-          {/* Confirm Password */}
+          {/* Confirm Password (Sign Up Only) */}
           {mode === "Sign Up" && (
             <div>
               <div className="relative">
@@ -246,7 +253,11 @@ const Login = () => {
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                   className="absolute right-3 top-3 text-gray-500 hover:text-black"
                 >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
                 </button>
               </div>
               {errors.confirmPassword && (
@@ -257,7 +268,7 @@ const Login = () => {
             </div>
           )}
 
-          {/* Forgot Password (only login mode) */}
+          {/* Forgot Password (Login Only) */}
           {mode === "Login" && (
             <div className="flex justify-end">
               <button
@@ -276,11 +287,15 @@ const Login = () => {
             disabled={loading}
             className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
           >
-            {loading ? "Please wait..." : mode === "Login" ? "Login" : "Sign Up"}
+            {loading
+              ? "Please wait..."
+              : mode === "Login"
+              ? "Login"
+              : "Sign Up"}
           </button>
         </form>
 
-        {/* Toggle between login and signup */}
+        {/* Toggle Login / Signup */}
         <div className="mt-6 text-center text-gray-700">
           {mode === "Login" ? (
             <p>
