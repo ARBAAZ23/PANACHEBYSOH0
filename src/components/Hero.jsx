@@ -1,22 +1,64 @@
-import React, { useEffect, useRef } from "react"; // 1. Import useEffect and useRef
-import { assets } from "../assets/assets.js";
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 const Hero = () => {
-  // 2. Create a ref to hold the video element
   const videoRef = useRef(null);
+  const [heroData, setHeroData] = useState(null);
 
-  // 3. Use an effect to play the video when the component mounts
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
-    // The .play() method returns a promise which can be rejected 
-    // if autoplay is blocked by the browser.
+    // Fetch latest hero from backend
+    const fetchHero = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}api/hero`);
+        setHeroData(res.data);
+      } catch (error) {
+        console.error("Failed to fetch hero data:", error);
+      }
+    };
+
+    fetchHero();
+  }, []);
+
+  useEffect(() => {
+    // Attempt to autoplay video if it exists
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
-        // This catch block is important to handle cases where autoplay is prevented.
         console.error("Video autoplay was prevented:", error);
-        // You could optionally show a play button here for the user to manually start the video.
       });
     }
-  }, []); // The empty dependency array [] ensures this effect runs only once
+  }, [heroData]);
+
+  const renderMedia = () => {
+    if (!heroData?.mediaUrl) return null;
+
+    const isVideo = heroData.mediaUrl.endsWith(".mp4") || heroData.mediaUrl.includes("video");
+
+    if (isVideo) {
+      return (
+        <video
+          ref={videoRef}
+          src={heroData.mediaUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          Your browser does not support the video tag.
+        </video>
+      );
+    } else {
+      return (
+        <img
+          src={heroData.mediaUrl}
+          alt={heroData.title || "Hero media"}
+          className="w-full h-full object-cover"
+        />
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col sm:flex-row items-center border border-gray-200 min-h-[720px] overflow-hidden">
@@ -30,7 +72,7 @@ const Hero = () => {
             </p>
           </div>
           <h1 className="font-serif text-4xl lg:text-5xl leading-tight mb-4 transition duration-700 ease-in-out">
-            Latest Arrivals
+            {heroData?.title || "Latest Arrivals"}
           </h1>
           <div className="flex items-center gap-3 group cursor-pointer hover:gap-4 transition-all duration-300 ease-in-out">
             <p className="text-sm md:text-base font-semibold group-hover:underline">
@@ -43,17 +85,7 @@ const Hero = () => {
 
       {/* Hero Right Side */}
       <div className="relative w-full sm:w-1/2 h-[70vh] sm:h-auto">
-        <video
-          ref={videoRef} // 4. Attach the ref to the video element
-          src={assets.home_video}
-          autoPlay  // Still good to keep as a fallback
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-        >
-          Your browser does not support the video tag.
-        </video>
+        {renderMedia()}
       </div>
     </div>
   );

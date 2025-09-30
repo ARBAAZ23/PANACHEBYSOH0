@@ -1,7 +1,5 @@
 import React from 'react';
 import Title from '../components/Title';
-import { assets } from '../assets/assets';
-import NewsLetterBox from '../components/NewsLetterBox';
 
 const Contact = () => {
   return (
@@ -13,13 +11,6 @@ const Contact = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto mt-12 sm:mt-16 mb-20 sm:mb-28 px-4 sm:px-8 md:px-20 flex flex-col md:flex-row items-center gap-10 sm:gap-12">
-        
-       {/* Image */}
-        <img
-          src={assets.contact_us}
-          alt="Contact Illustration"
-          className="w-full md:max-w-[500px] rounded-lg shadow-md animate-zoom-in"
-        />
 
         {/* Contact Info */}
         <div className="flex flex-col gap-4 sm:gap-5 animate-slide-in-right text-sm sm:text-base leading-relaxed">
@@ -45,9 +36,6 @@ const Contact = () => {
           </div>
         </div>
       </div>
-
-      {/* Newsletter Section */}
-      {/* <NewsLetterBox /> */}
     </div>
   );
 };

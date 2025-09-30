@@ -21,6 +21,10 @@ import Profile from "./pages/Profile";
 import ScrollToTop from "./utils/ScrollToTop";
 import PaypalSuccess from "./utils/PaypalSuccess";
 import PaymentCancelled from "./utils/PaymentCancelled";
+import Faq from "./pages/Faq";
+import Terms from "./pages/Terms";
+import Shipping from "./pages/Shipping";
+import Returns from "./pages/Return";
 // import PaypalSuccess from "./utils/PaypalSuccess";
 // import PaymentCancelled from './utils/PaymentCancelled'
 
@@ -47,6 +51,10 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/payment-success" element={<PaypalSuccess />} />
         <Route path="/payment-cancelled" element={<PaymentCancelled />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/shipping" element={<Shipping />} />
+        <Route path="/returns" element={<Returns />} />
       </Routes>
       <Footer />
     </div>
