@@ -188,7 +188,7 @@ const getFilteredAndSortedProducts = () => {
                         />
                       </div>
                       <h3 className="mt-4 text-sm font-semibold text-gray-800 group-hover:text-orange-600 transition-colors">{item.name}</h3>
-                      <p className="mt-1 text-base font-bold text-gray-900">${item.price}</p>
+                      <p className="mt-1 text-base font-bold text-gray-900">£{item.price}</p>
                     </Link>
                   </motion.div>
                 ))}
