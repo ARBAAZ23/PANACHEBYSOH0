@@ -39,7 +39,7 @@ const Hero = () => {
       return (
         <video
           ref={videoRef}
-          src={heroData.mediaUrl}
+          src={backendUrl + "uploads/" + heroData.mediaUrl}
           autoPlay
           loop
           muted
@@ -52,7 +52,7 @@ const Hero = () => {
     } else {
       return (
         <img
-          src={heroData.mediaUrl}
+          src={backendUrl + "uploads/" + heroData.mediaUrl}
           alt={heroData.title || "Hero media"}
           className="w-full h-full object-cover"
         />
