@@ -5,10 +5,11 @@ const Hero = () => {
   const videoRef = useRef(null);
   const [heroData, setHeroData] = useState(null);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL.endsWith("/")
+    ? import.meta.env.VITE_BACKEND_URL
+    : import.meta.env.VITE_BACKEND_URL + "/";
 
   useEffect(() => {
-    // Fetch latest hero from backend
     const fetchHero = async () => {
       try {
         const res = await axios.get(`${backendUrl}api/hero`);
@@ -19,10 +20,9 @@ const Hero = () => {
     };
 
     fetchHero();
-  }, []);
+  }, [backendUrl]);
 
   useEffect(() => {
-    // Attempt to autoplay video if it exists
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
         console.error("Video autoplay was prevented:", error);
@@ -33,26 +33,30 @@ const Hero = () => {
   const renderMedia = () => {
     if (!heroData?.mediaUrl) return null;
 
-    const isVideo = heroData.mediaUrl.endsWith(".mp4") || heroData.mediaUrl.includes("video");
+    const isVideo =
+      heroData.mediaUrl.endsWith(".mp4") ||
+      heroData.mediaUrl.toLowerCase().includes("video");
+
+    const mediaSrc = `${backendUrl}uploads/${heroData.mediaUrl}`;
 
     if (isVideo) {
       return (
         <video
           ref={videoRef}
-          src={backendUrl + "uploads/" + heroData.mediaUrl}
           autoPlay
           loop
           muted
           playsInline
           className="w-full h-full object-cover"
         >
+          <source src={mediaSrc} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       );
     } else {
       return (
         <img
-          src={backendUrl + "uploads/" + heroData.mediaUrl}
+          src={mediaSrc}
           alt={heroData.title || "Hero media"}
           className="w-full h-full object-cover"
         />
