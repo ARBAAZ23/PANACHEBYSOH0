@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
-  const { getCartAmount, token, backendUrl, cartItems, delivery_fee } =
+  const { token, backendUrl, cartItems, getGrandTotal, } =
     useContext(ShopContext);
 
   const [formData, setFormData] = useState({
@@ -119,41 +119,41 @@ const PlaceOrder = () => {
 
   // --- Submit Handler ---
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
+    e.preventDefault();
+    if (!validateForm()) return;
 
-  try {
-    const orderData = {
-      items: finalProducts,
-      amount: getCartAmount() + delivery_fee,
-      address: formData,
-    };
+    try {
+      const orderData = {
+        items: finalProducts,
+        amount: getGrandTotal(),
+        address: formData,
+      };
 
-    if (paymentMethod === "cod") {
-      const response = await axios.post(
-        `${backendUrl}api/order/place`,
-        orderData,
-        { headers: { token } }
-      );
-      if (response.data.success) {
-        toast.success("🎉 COD Order placed!");
-        navigate("/orders");
+      if (paymentMethod === "cod") {
+        const response = await axios.post(
+          `${backendUrl}api/order/place`,
+          orderData,
+          { headers: { token } }
+        );
+        if (response.data.success) {
+          toast.success("🎉 COD Order placed!");
+          navigate("/orders");
+        }
+      } else if (paymentMethod === "paypal") {
+        const response = await axios.post(
+          `${backendUrl}api/order/paypal`,
+          orderData,
+          { headers: { token } }
+        );
+        if (response.data.success) {
+          window.location.href = response.data.approvalUrl; // ✅ redirect PayPal
+        }
       }
-    } else if (paymentMethod === "paypal") {
-      const response = await axios.post(
-        `${backendUrl}api/order/paypal`,
-        orderData,
-        { headers: { token } }
-      );
-      if (response.data.success) {
-        window.location.href = response.data.approvalUrl; // ✅ redirect PayPal
-      }
+    } catch (error) {
+      toast.error("❌ Order failed");
+      console.error(error);
     }
-  } catch (error) {
-    toast.error("❌ Order failed");
-    console.error(error);
-  }
-};
+  };
 
 
   return (
@@ -361,14 +361,12 @@ const PlaceOrder = () => {
             {/* COD Option */}
             <div
               onClick={() => setPaymentMethod("cod")}
-              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${
-                paymentMethod === "cod" ? "border-green-500" : ""
-              }`}
+              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${paymentMethod === "cod" ? "border-green-500" : ""
+                }`}
             >
               <div
-                className={`min-w-4 h-4 border rounded-full ${
-                  paymentMethod === "cod" ? "bg-green-500" : "bg-white"
-                }`}
+                className={`min-w-4 h-4 border rounded-full ${paymentMethod === "cod" ? "bg-green-500" : "bg-white"
+                  }`}
               ></div>
               <img className="h-6 mx-3" src={assets.cod_icon} alt="COD" />
               <p className="font-medium">Cash on Delivery</p>
@@ -377,14 +375,12 @@ const PlaceOrder = () => {
             {/* PayPal Option */}
             <div
               onClick={() => setPaymentMethod("paypal")}
-              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${
-                paymentMethod === "paypal" ? "border-green-500" : ""
-              }`}
+              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${paymentMethod === "paypal" ? "border-green-500" : ""
+                }`}
             >
               <div
-                className={`min-w-4 h-4 border rounded-full ${
-                  paymentMethod === "paypal" ? "bg-green-500" : "bg-white"
-                }`}
+                className={`min-w-4 h-4 border rounded-full ${paymentMethod === "paypal" ? "bg-green-500" : "bg-white"
+                  }`}
               ></div>
               <img className="h-6 mx-3" src={assets.paypal_icon} alt="PayPal" />
               <p className="font-medium">PayPal</p>

@@ -7,35 +7,26 @@ const UK_STANDARD_RATE_PER_KG = 4.99;
 const UK_NEXT_DAY_RATE_PER_KG = 8.99;
 const INTERNATIONAL_RATE_PER_KG = 9.99;
 
-const CartTotal = () => {
+const CartTotal = (
+  // { setGrandTotal }
+) => {
   const {
     currency = "£",
     cartItems,
     products,
     shippingMethod = "standard", // "standard" or "next_day"
     country = "UK", // "UK" or any other country
+    getCartAmount,
+    getCartWeight,
+    getGrandTotal,
+    deliveryFee,
+    setDeliveryFee
   } = useContext(ShopContext);
 
-  const [deliveryFee, setDeliveryFee] = useState(0);
-  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    let subtotalCalc = 0;
-    let totalWeightGrams = 0;
-
-    // Iterate over cartItems to calculate subtotal and weight
-    for (const productId in cartItems) {
-      const product = products.find((p) => String(p._id) === String(productId));
-      if (!product) continue;
-
-      for (const size in cartItems[productId]) {
-        const quantity = cartItems[productId][size];
-        subtotalCalc += product.price * quantity;
-        totalWeightGrams += (product.weight || 0) * quantity;
-      }
-    }
-
-    setSubtotal(subtotalCalc);
+    const totalWeightGrams = getCartWeight();
 
     // Convert total weight from grams to kilograms
     const totalWeightKg = totalWeightGrams / 1000;
@@ -51,9 +42,16 @@ const CartTotal = () => {
     }
 
     setDeliveryFee(Math.round(fee * 100) / 100); // Round to 2 decimal places
-  }, [cartItems, products, country, shippingMethod]);
+  }, [cartItems, products, country, shippingMethod, getCartWeight, setDeliveryFee]);
 
-  const total = subtotal + deliveryFee;
+
+  // useEffect(() => {
+  //   setGrandTotal(subtotal + deliveryFee);
+  // }, [subtotal, deliveryFee, setGrandTotal])
+
+  useEffect(() => {
+    setTotal(getGrandTotal());
+  }, [deliveryFee, getGrandTotal])
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 mt-12">
@@ -68,7 +66,7 @@ const CartTotal = () => {
             <span className="text-gray-600">Subtotal</span>
             <span className="font-medium">
               {currency}
-              {subtotal.toFixed(2)}
+              {getCartAmount().toFixed(2)}
             </span>
           </div>
 

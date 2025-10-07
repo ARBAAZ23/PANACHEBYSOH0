@@ -8,7 +8,7 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = ({ children }) => {
   const currency = "£";
-  const delivery_fee = 10;
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [search, setSearch] = useState("");
@@ -177,14 +177,34 @@ const ShopContextProvider = ({ children }) => {
     return totalCount;
   };
 
+  const getCartWeight = () => {
+    let totalWeightGrams = 0;
+    for (const itemId in cartItems) {
+      const itemInfo = products.find((p) => String(p._id) === String(itemId));
+
+      if (!itemInfo) continue;
+
+      for (const size in cartItems[itemId]) {
+        let quantity = cartItems[itemId][size];
+        totalWeightGrams += (itemInfo.weight || 0) * quantity;
+      }
+
+    }
+    return totalWeightGrams;
+  }
+
   // Cart amount
   const getCartAmount = () => {
     let totalAmount = 0;
+
     for (const itemId in cartItems) {
       const itemInfo = products.find((p) => String(p._id) === String(itemId));
+
       if (!itemInfo) continue;
+
       for (const size in cartItems[itemId]) {
-        totalAmount += itemInfo.price * cartItems[itemId][size];
+        let quantity = cartItems[itemId][size];
+        totalAmount += itemInfo.price * quantity;
       }
     }
     return totalAmount;
@@ -199,10 +219,9 @@ const ShopContextProvider = ({ children }) => {
   };
 
   // Total
-  const getTotalAmount = () => {
-    const subtotal = getCartAmount();
-    return subtotal + delivery_fee + shippingCost;
-  };
+  const getGrandTotal = () => {
+    return getCartAmount() + deliveryFee;
+  }
 
   // Fetch products
   const getProductData = async () => {
@@ -355,7 +374,8 @@ const ShopContextProvider = ({ children }) => {
   const value = {
     products,
     currency,
-    delivery_fee,
+    deliveryFee,
+    setDeliveryFee,
     search,
     setSearch,
     showSearch,
@@ -366,7 +386,7 @@ const ShopContextProvider = ({ children }) => {
     updateQuantity,
     getCartCount,
     getCartAmount,
-    getTotalAmount,
+    getCartWeight,
     clearCart,
     distance,
     setDistance,
@@ -387,6 +407,7 @@ const ShopContextProvider = ({ children }) => {
     toggleWishlist,
     user,
     setUser,
+    getGrandTotal
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
