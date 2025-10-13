@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Country, State, City } from "country-state-city";
+import { Country, City } from "country-state-city";
 import { motion } from "framer-motion";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
@@ -11,8 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
-  const { token, backendUrl, cartItems, getGrandTotal, } =
-    useContext(ShopContext);
+  const { token, backendUrl, cartItems, getGrandTotal, getCartAmount } = useContext(ShopContext);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -20,7 +19,6 @@ const PlaceOrder = () => {
     email: "",
     street: "",
     country: "",
-    state: "",
     city: "",
     zipcode: "",
     phone: "",
@@ -30,7 +28,7 @@ const PlaceOrder = () => {
   const [errors, setErrors] = useState({});
   const [paymentMethod, setPaymentMethod] = useState("cod"); // ✅ Default COD
 
-  // --- Validation Function ---
+  // --- Validation ---
   const validateField = (name, value) => {
     let error = "";
 
@@ -40,7 +38,6 @@ const PlaceOrder = () => {
       if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
         error = "Enter a valid email address";
       }
-      // ✅ Worldwide zipcode (letters, numbers, spaces, hyphens)
       if (name === "zipcode" && !/^[A-Za-z0-9\s-]{3,10}$/.test(value)) {
         error = "Enter a valid zipcode";
       }
@@ -64,10 +61,10 @@ const PlaceOrder = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // --- Handle input change ---
+  // --- Handlers ---
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // clear error on typing
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleBlur = (e) => {
@@ -76,38 +73,21 @@ const PlaceOrder = () => {
     setErrors({ ...errors, [name]: error });
   };
 
-  // --- Country change handler ---
   const handleCountryChange = (e) => {
     const selectedCountry = Country.getAllCountries().find(
       (c) => c.isoCode === e.target.value
     );
-
     setFormData({
       ...formData,
       country: selectedCountry?.isoCode || "",
-      state: "",
       city: "",
       phoneCode: selectedCountry ? `+${selectedCountry.phonecode}` : "",
     });
     setErrors({ ...errors, country: "" });
   };
 
-  // --- State change handler ---
-  const handleStateChange = (e) => {
-    setFormData({
-      ...formData,
-      state: e.target.value,
-      city: "",
-    });
-    setErrors({ ...errors, state: "" });
-  };
-
-  // --- City change handler ---
   const handleCityChange = (e) => {
-    setFormData({
-      ...formData,
-      city: e.target.value,
-    });
+    setFormData({ ...formData, city: e.target.value });
     setErrors({ ...errors, city: "" });
   };
 
@@ -117,7 +97,7 @@ const PlaceOrder = () => {
     ...item,
   }));
 
-  // --- Submit Handler ---
+  // --- Submit ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -125,28 +105,24 @@ const PlaceOrder = () => {
     try {
       const orderData = {
         items: finalProducts,
-        amount: getGrandTotal(),
+        amount: getCartAmount(),
         address: formData,
       };
 
       if (paymentMethod === "cod") {
-        const response = await axios.post(
-          `${backendUrl}api/order/place`,
-          orderData,
-          { headers: { token } }
-        );
+        const response = await axios.post(`${backendUrl}api/order/place`, orderData, {
+          headers: { token },
+        });
         if (response.data.success) {
           toast.success("🎉 COD Order placed!");
           navigate("/orders");
         }
       } else if (paymentMethod === "paypal") {
-        const response = await axios.post(
-          `${backendUrl}api/order/paypal`,
-          orderData,
-          { headers: { token } }
-        );
+        const response = await axios.post(`${backendUrl}api/order/paypal`, orderData, {
+          headers: { token },
+        });
         if (response.data.success) {
-          window.location.href = response.data.approvalUrl; // ✅ redirect PayPal
+          window.location.href = response.data.approvalUrl;
         }
       }
     } catch (error) {
@@ -155,26 +131,20 @@ const PlaceOrder = () => {
     }
   };
 
-
   return (
     <motion.form
       onSubmit={handleSubmit}
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="flex flex-col sm:flex-row justify-between gap-6 pt-5 sm:pt-14 min-h-[80vh] border-t bg-gradient-to-b from-gray-50 to-white px-6 md:px-12 rounded-xl shadow-sm"
+      className="max-w-3xl mx-auto flex flex-col gap-8 pt-8 sm:pt-14 min-h-[80vh] border-t bg-gradient-to-b from-gray-50 to-white px-6 md:px-10 rounded-xl shadow-sm"
     >
-      {/* ---------- LEFT: Delivery Info ---------- */}
-      <motion.div
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="flex flex-col gap-4 w-full sm:w-[60%] p-6 bg-white rounded-2xl shadow-md"
-      >
+      {/* ---------- DELIVERY INFO ---------- */}
+      <div className="bg-white p-6 rounded-2xl shadow-md">
         <Title text1="DELIVERY" text2="INFORMATION" />
 
         {/* Name */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 mt-4">
           <div className="w-full">
             <input
               type="text"
@@ -185,9 +155,7 @@ const PlaceOrder = () => {
               onBlur={handleBlur}
               className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
             />
-            {errors.firstName && (
-              <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
-            )}
+            {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
           </div>
           <div className="w-full">
             <input
@@ -199,130 +167,93 @@ const PlaceOrder = () => {
               onBlur={handleBlur}
               className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
             />
-            {errors.lastName && (
-              <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
-            )}
+            {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
           </div>
         </div>
 
         {/* Email */}
-        <div>
+        <div className="mt-3">
           <input
             type="email"
             name="email"
-            placeholder="Email address"
+            placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
             onBlur={handleBlur}
             className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-          )}
+          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
         </div>
 
         {/* Street */}
-        <div>
+        <div className="mt-3">
           <input
             type="text"
             name="street"
-            placeholder="Street"
+            placeholder="Street Address"
             value={formData.street}
             onChange={handleChange}
             onBlur={handleBlur}
             className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
           />
-          {errors.street && (
-            <p className="text-red-500 text-sm mt-1">{errors.street}</p>
-          )}
+          {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
         </div>
 
-        {/* Country + State */}
-        <div className="flex gap-3">
-          <div className="w-full">
-            <select
-              name="country"
-              value={formData.country}
-              onChange={handleCountryChange}
-              onBlur={handleBlur}
-              className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
-            >
-              <option value="">Select Country</option>
-              {Country.getAllCountries().map((c) => (
-                <option key={c.isoCode} value={c.isoCode}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            {errors.country && (
-              <p className="text-red-500 text-sm mt-1">{errors.country}</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <select
-              name="state"
-              value={formData.state}
-              onChange={handleStateChange}
-              onBlur={handleBlur}
-              disabled={!formData.country}
-              className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
-            >
-              <option value="">Select State</option>
-              {State.getStatesOfCountry(formData.country).map((s) => (
-                <option key={s.isoCode} value={s.isoCode}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            {errors.state && (
-              <p className="text-red-500 text-sm mt-1">{errors.state}</p>
-            )}
-          </div>
+        {/* Country */}
+        <div className="mt-3">
+          <select
+            name="country"
+            value={formData.country}
+            onChange={handleCountryChange}
+            onBlur={handleBlur}
+            className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
+          >
+            <option value="">Select Country / Region</option>
+            {Country.getAllCountries().map((c) => (
+              <option key={c.isoCode} value={c.isoCode}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
         </div>
 
         {/* City */}
-        <div>
+        <div className="mt-3">
           <select
             name="city"
             value={formData.city}
             onChange={handleCityChange}
             onBlur={handleBlur}
-            disabled={!formData.state}
+            disabled={!formData.country}
             className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
           >
             <option value="">Select City</option>
-            {City.getCitiesOfState(formData.country, formData.state).map(
-              (city) => (
-                <option key={city.name} value={city.name}>
-                  {city.name}
-                </option>
-              )
-            )}
+            {City.getCitiesOfCountry(formData.country).map((city) => (
+              <option key={city.name} value={city.name}>
+                {city.name}
+              </option>
+            ))}
           </select>
-          {errors.city && (
-            <p className="text-red-500 text-sm mt-1">{errors.city}</p>
-          )}
+          {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
         </div>
 
         {/* Zipcode */}
-        <div>
+        <div className="mt-3">
           <input
             type="text"
             name="zipcode"
-            placeholder="Zipcode"
+            placeholder="Postcode / ZIP"
             value={formData.zipcode}
             onChange={handleChange}
             onBlur={handleBlur}
             className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
           />
-          {errors.zipcode && (
-            <p className="text-red-500 text-sm mt-1">{errors.zipcode}</p>
-          )}
+          {errors.zipcode && <p className="text-red-500 text-sm mt-1">{errors.zipcode}</p>}
         </div>
 
-        {/* Phone with auto country code */}
-        <div className="flex gap-3">
+        {/* Phone */}
+        <div className="flex gap-3 mt-3">
           <input
             type="text"
             value={formData.phoneCode}
@@ -339,26 +270,19 @@ const PlaceOrder = () => {
               onBlur={handleBlur}
               className="border rounded-xl p-3 w-full shadow-sm focus:ring-2 focus:ring-black/80 outline-none"
             />
-            {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
-            )}
+            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* ---------- RIGHT: Cart Summary & Payment ---------- */}
-      <motion.div
-        initial={{ x: 50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="flex flex-col gap-6 w-full sm:w-[40%] p-6 bg-white rounded-2xl shadow-md"
-      >
+      {/* ---------- CART & PAYMENT ---------- */}
+      <div className="bg-white p-6 rounded-2xl shadow-md">
         <CartTotal />
 
         <div className="mt-6">
           <Title text1="PAYMENT" text2="METHOD" />
-          <div className="flex gap-3 flex-col lg:flex-row mt-3">
-            {/* COD Option */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-3">
+            {/* COD */}
             <div
               onClick={() => setPaymentMethod("cod")}
               className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${paymentMethod === "cod" ? "border-green-500" : ""
@@ -372,7 +296,7 @@ const PlaceOrder = () => {
               <p className="font-medium">Cash on Delivery</p>
             </div>
 
-            {/* PayPal Option */}
+            {/* PayPal */}
             <div
               onClick={() => setPaymentMethod("paypal")}
               className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${paymentMethod === "paypal" ? "border-green-500" : ""
@@ -405,7 +329,7 @@ const PlaceOrder = () => {
             </motion.button>
           </div>
         </div>
-      </motion.div>
+      </div>
     </motion.form>
   );
 };
