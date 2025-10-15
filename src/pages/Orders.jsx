@@ -117,7 +117,12 @@ const Orders = () => {
           })
         );
 
-        setOrderData(enrichedOrders.reverse());
+        // ✅ Sort by date (newest first)
+        const sortedOrders = enrichedOrders.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+
+        setOrderData(sortedOrders);
       }
     } catch (error) {
       console.error("❌ Error loading orders:", error);
@@ -131,9 +136,9 @@ const Orders = () => {
   return (
     <div className="border-t pt-16 px-4 sm:px-8 lg:px-20 bg-gray-50 min-h-screen">
       {/* Title */}
-      <div className="text-center mb-10">
-        <Title text1="MY" text2="ORDERS" />
-        <p className="text-gray-500 mt-2">
+      <div className="text-2xl text-center mb-10">
+        <Title className="" text1="MY  " text2="ORDERS" />
+        <p className="text-sm text-gray-500 mt-2">
           Track and manage all your purchases
         </p>
       </div>

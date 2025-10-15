@@ -27,6 +27,7 @@ const PlaceOrder = () => {
 
   const [errors, setErrors] = useState({});
   const [paymentMethod, setPaymentMethod] = useState("cod"); // ✅ Default COD
+  const [loading, setLoading] = useState(false); // <-- Added loading state
 
   // --- Validation ---
   const validateField = (name, value) => {
@@ -102,6 +103,8 @@ const PlaceOrder = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    setLoading(true);
+
     try {
       const orderData = {
         items: finalProducts,
@@ -113,6 +116,7 @@ const PlaceOrder = () => {
         const response = await axios.post(`${backendUrl}api/order/place`, orderData, {
           headers: { token },
         });
+        setLoading(false);
         if (response.data.success) {
           toast.success("🎉 COD Order placed!");
           navigate("/orders");
@@ -121,11 +125,15 @@ const PlaceOrder = () => {
         const response = await axios.post(`${backendUrl}api/order/paypal`, orderData, {
           headers: { token },
         });
+        // Don't setLoading(false) here because redirecting
         if (response.data.success) {
           window.location.href = response.data.approvalUrl;
+        } else {
+          setLoading(false);
         }
       }
     } catch (error) {
+      setLoading(false);
       toast.error("❌ Order failed");
       console.error(error);
     }
@@ -230,7 +238,7 @@ const PlaceOrder = () => {
           >
             <option value="">Select City</option>
             {City.getCitiesOfCountry(formData.country).map((city) => (
-              <option key={city.name} value={city.name}>
+              <option key={`${city.name}-${city.stateCode}`} value={city.name}>
                 {city.name}
               </option>
             ))}
@@ -275,7 +283,7 @@ const PlaceOrder = () => {
         </div>
       </div>
 
-      {/* ---------- CART & PAYMENT ---------- */}
+      {/* CART & PAYMENT */}
       <div className="bg-white p-6 rounded-2xl shadow-md">
         <CartTotal />
 
@@ -285,12 +293,14 @@ const PlaceOrder = () => {
             {/* COD */}
             <div
               onClick={() => setPaymentMethod("cod")}
-              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${paymentMethod === "cod" ? "border-green-500" : ""
-                }`}
+              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${
+                paymentMethod === "cod" ? "border-green-500" : ""
+              }`}
             >
               <div
-                className={`min-w-4 h-4 border rounded-full ${paymentMethod === "cod" ? "bg-green-500" : "bg-white"
-                  }`}
+                className={`min-w-4 h-4 border rounded-full ${
+                  paymentMethod === "cod" ? "bg-green-500" : "bg-white"
+                }`}
               ></div>
               <img className="h-6 mx-3" src={assets.cod_icon} alt="COD" />
               <p className="font-medium">Cash on Delivery</p>
@@ -299,12 +309,14 @@ const PlaceOrder = () => {
             {/* PayPal */}
             <div
               onClick={() => setPaymentMethod("paypal")}
-              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${paymentMethod === "paypal" ? "border-green-500" : ""
-                }`}
+              className={`flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-xl hover:shadow-md transition ${
+                paymentMethod === "paypal" ? "border-green-500" : ""
+              }`}
             >
               <div
-                className={`min-w-4 h-4 border rounded-full ${paymentMethod === "paypal" ? "bg-green-500" : "bg-white"
-                  }`}
+                className={`min-w-4 h-4 border rounded-full ${
+                  paymentMethod === "paypal" ? "bg-green-500" : "bg-white"
+                }`}
               ></div>
               <img className="h-6 mx-3" src={assets.paypal_icon} alt="PayPal" />
               <p className="font-medium">PayPal</p>
@@ -314,18 +326,19 @@ const PlaceOrder = () => {
           <div className="w-full flex justify-center mt-10">
             <motion.button
               whileHover={{
-                scale: 1.05,
-                boxShadow: "0px 8px 20px rgba(0,0,0,0.2)",
+                scale: loading ? 1 : 1.05,
+                boxShadow: loading ? "none" : "0px 8px 20px rgba(0,0,0,0.2)",
               }}
-              whileTap={{ scale: 0.95 }}
+              whileTap={{ scale: loading ? 1 : 0.95 }}
               type="submit"
-              className="relative bg-gradient-to-r from-gray-900 via-black to-gray-800 
-               text-white font-medium tracking-wide 
-               px-12 py-3 rounded-2xl shadow-md 
-               hover:from-gray-800 hover:via-black hover:to-gray-700
-               transition-all duration-500 ease-in-out"
+              disabled={loading}
+              className={`relative bg-gradient-to-r from-gray-900 via-black to-gray-800 
+                text-white font-medium tracking-wide 
+                px-12 py-3 rounded-2xl shadow-md 
+                ${loading ? "opacity-60 cursor-not-allowed" : "hover:from-gray-800 hover:via-black hover:to-gray-700"}
+                transition-all duration-500 ease-in-out`}
             >
-              PLACE ORDER
+              {loading ? "Processing..." : "PLACE ORDER"}
             </motion.button>
           </div>
         </div>
